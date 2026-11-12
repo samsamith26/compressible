@@ -43,6 +43,11 @@ function lnAreaRatio(mach: number, gamma: number): number {
   )
 }
 
+/** p/p0 at Mach M. Raw: inputs are not validated. */
+export function pressureRatio(mach: number, gamma: number): number {
+  return stagnationTempRatio(mach, gamma) ** (-gamma / (gamma - 1))
+}
+
 /** A/A*(M). Raw: inputs are not validated. */
 export function areaRatio(mach: number, gamma: number): number {
   return Math.exp(lnAreaRatio(mach, gamma))
@@ -68,7 +73,7 @@ export function isentropicFromMach(mach: number, gamma: number): Result<Isentrop
 
   const k = stagnationTempRatio(mach, gamma)
   const tT0 = 1 / k
-  const pP0 = k ** (-gamma / (gamma - 1))
+  const pP0 = pressureRatio(mach, gamma)
   const rhoRho0 = k ** (-1 / (gamma - 1))
   const tStar = 2 / (gamma + 1)
   const supersonic = mach >= 1

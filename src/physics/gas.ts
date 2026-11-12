@@ -30,7 +30,7 @@ function describeRange(name: string, range: Range): string {
 }
 
 function fmt(x: number): string {
-  return Number.isInteger(x) ? String(x) : x.toPrecision(6)
+  return String(Number(x.toPrecision(6)))
 }
 
 export function requireInRange(name: string, x: number, range: Range): Result<number> {
