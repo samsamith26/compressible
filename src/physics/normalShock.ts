@@ -50,10 +50,14 @@ export function normalShock(m1: number, gamma: number): Result<NormalShockState>
   if (!g.ok) return g
   const r = requireInRange('M1', m1, { lo: 1, hi: Infinity, loInclusive: true, hiInclusive: false })
   if (!r.ok) return r
+  return ok(normalShockRaw(m1, gamma))
+}
 
+/** Unvalidated normal shock for callers that guarantee M1 ≥ 1 and γ > 1 (oblique shocks). */
+export function normalShockRaw(m1: number, gamma: number): NormalShockState {
   const p2P1 = p2P1Of(m1, gamma)
   const rho2Rho1 = ((gamma + 1) * m1 * m1) / (2 + (gamma - 1) * m1 * m1)
-  return ok({
+  return {
     m1,
     m2: Math.sqrt(m2Squared(m1, gamma)),
     p2P1,
@@ -61,7 +65,7 @@ export function normalShock(m1: number, gamma: number): Result<NormalShockState>
     t2T1: p2P1 / rho2Rho1,
     p02P01: Math.exp(lnP02P01(m1, gamma)),
     p1P02: Math.exp(lnP1P02(m1, gamma)),
-  })
+  }
 }
 
 /** The M1 ↔ M2 relation is symmetric. */
