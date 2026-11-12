@@ -4,27 +4,39 @@ Status as of 2026-11-12. Read this before starting work; update it when the stat
 
 ## What's built
 
-**Phase 1, physics module (complete).** It lives on branch `feat/physics-module`; the PR into `main` is open but not yet merged.
+**Phase 1, physics module (complete).** On `feat/physics-module` (PR into `main` open, not merged).
 
 | File | Contents |
 |---|---|
 | `src/physics/result.ts` | `Result<T>`, `ok`, `err`, error codes |
 | `src/physics/gas.ts` | γ and range guards, `MACH_MIN`/`MACH_MAX`, `outOfRange` |
 | `src/physics/numeric.ts` | Brent root finder `findRoot`, deg/rad |
-| `src/physics/isentropic.ts` | forward state from M; inverses from T/T0, p/p0, ρ/ρ0, A/A* (sub/sup), Mach angle, ν |
+| `src/physics/isentropic.ts` | forward state from M; inverses from T/T0, p/p0, ρ/ρ0, A/A* (sub/sup), Mach angle, ν; raw `machAngleDeg` |
 | `src/physics/normalShock.ts` | forward from M1; inverses from M2, p2/p1, ρ2/ρ1, T2/T1, p02/p01, p1/p02 |
 | `src/physics/obliqueShock.ts` | θ-β-M relation, θmax, weak/strong from θ, from β, from M1n, detachment |
 | `src/physics/solvers.ts` | `solveIsentropic`, `solveNormalShock`, `solveOblique` dispatchers |
 | `src/physics/index.ts` | public API |
 | `scripts/record-vt-fixtures.ts` | Playwright recorder for VT reference values |
 
-**Tests:** 471, with 100% coverage on `src/physics`. They cover:
-- textbook values from Anderson's tables
-- round trips for every inverse over γ ∈ {1.1, 1.3, 1.4, 1.67}
-- edge cases: M = 1, θ = 0, θ = θmax, A/A* ≈ 1, γ near 1, M1 up to 50, out-of-domain inputs
-- 261 cases recorded from the VT calculator at γ ∈ {1.2, 1.4, 1.67}
+**Phase 1, UI (complete, awaiting your review).** On `claude/great-bell-lrkq1u`, which builds on
+`feat/physics-module`. Plan: `docs/superpowers/plans/2026-11-12-ui.md`.
 
-**Not built yet:** any UI. `src/App.tsx`, `App.css`, `index.css` and `src/assets/` are still the Vite starter template. Tailwind, shadcn/ui and d3 are not installed.
+| Path | Contents |
+|---|---|
+| `src/index.css` | design tokens (light/dark), graph-paper, glide transitions, reduced motion |
+| `src/lib/` | number parsing/formatting, URL query + store, theme, contrast check, ticks, label spreading |
+| `src/hooks/` | `useSearchParams` (URL as store), `useTheme`, `useGamma` (shared γ), `useLastOk`, `usePointerDrag`, `useElementWidth`, `useNudgeKeys`, `useCalculatorTab` |
+| `src/components/` | shadcn-style `ui/button`, `ui/tabs`; `NumberField`, `KindSelect`, `Readout`, `Panel`, `CalculatorLayout`, `GammaField`; layout (header wordmark, theme toggle, footer credit); charts (`Axis`, `JumpChart`) |
+| `src/features/isentropic/` | `model.ts`, `useIsentropicSolver`, `RatioChart` (log ratios vs M, draggable/keyboard marker) |
+| `src/features/normal-shock/` | `model.ts`, `useNormalShockSolver`, `ShockTube` (particle spacing ∝ 1/ρ) |
+| `src/features/oblique-shock/` | `model.ts`, `useObliqueSolver`, `WedgeDiagram` (attached/detached), `ThetaBetaChart` (draggable point), `thetaBeta.ts`, `wedgeGeometry.ts` |
+| `scripts/verify-ui.ts` | `npm run verify:ui`: Playwright checks at 1280/375px, light/dark, behaviour |
+
+URL keys: `calc` (isentropic/normal/oblique), `g` (γ, shared), `iso.k`/`iso.v`, `ns.k`/`ns.v`,
+`ob.m`/`ob.k`/`ob.v`. Field text is stored as typed, so invalid input round-trips with its error.
+
+**Tests:** 620 (Vitest), 100% coverage on `src/physics`. `npm run verify:ui` passes (53 checks).
+In the cloud container run it as `CHROMIUM_PATH=/opt/pw-browsers/chromium npm run verify:ui`.
 
 ## Decisions
 
@@ -47,7 +59,19 @@ Status as of 2026-11-12. Read this before starting work; update it when the stat
   - θ within 1e-12° of θmax counts as θmax (weak = strong = β_max).
 - **Coverage ignore:** one `/* v8 ignore */` on the root-failure return in `obliqueFromTheta`. That bracket is valid by construction.
 - **VT fixture tolerance:** max(2 × last displayed digit, 1e-5 relative). In 17 cases VT's own inverse stops short (e.g. it echoes p02/p01 = 0.92199659 for an input of 0.922). There, the test compares our forward relations at VT's answer, and our inverse to the input to 1e-9.
-- **Branch workflow:** work happened on a feature branch rather than `main`. The user hasn't said whether to keep using branches and PRs for the UI phase.
+- **Branch workflow:** work happened on a feature branch rather than `main`. The UI phase was done on `claude/great-bell-lrkq1u` (the cloud session's assigned branch), stacked on `feat/physics-module`.
+
+### Made by Claude in the UI phase (open to change, please review)
+- **Visual direction ("wind-tunnel instrument")** chosen without the frontend-design skill, which wasn't available in the cloud session. IBM Plex Sans + Plex Mono, warm paper / graphite grounds, blue = state 1 / upstream, amber = state 2 / downstream, graph-paper chart grounds. Details and rationale in the UI plan. Screenshots: run `npm run verify:ui`, then see `verification/`.
+- **shadcn/ui primitives were written by hand** (button, tabs) on `radix-ui` + `cva` + `tailwind-merge`, because the cloud network blocks `ui.shadcn.com`. Running `npx shadcn init` locally later is compatible; it would overwrite `src/components/ui/*`.
+- **Inputs:** native `<select>` for "known quantity" (best keyboard/mobile behaviour) and text inputs with `inputMode="decimal"` (accepts "1e-3", decimal comma, Unicode minus; ArrowUp/Down nudge). Not `<input type="number">`, which mangles half-typed values.
+- **γ is shared** across the three calculators (one `g` key).
+- **Switching input kind converts the value** (M = 2 → p/p0 = 0.127805), so the flow state doesn't jump.
+- **Invalid input** shows its message under the field that caused it (γ, M1 or the value) and dims the last valid results instead of clearing them. Detachment is an amber notice, not an error.
+- **Chart drags write the input in the person's chosen kind** (dragging in A/A* mode keeps A/A*, flipping the sub/sup branch as needed; θ inputs flip weak/strong by side of β at θmax), using the shortest text that still solves within tolerance.
+- **The detached bow shock drawing is schematic** (hyperbola with Mach-angle asymptotes and a heuristic standoff), and is labelled as such.
+- **`machAngleDeg` is now exported** from `src/physics` (closes the asin(1/M) cleanup from open issue 4).
+- **Vitest processes `index.css`** (`test.css.include`) so the contrast test can read the real tokens with `?raw`.
 
 ## Open issues
 1. **The PR is not merged.** `main` has only the spec and plan. Merge it on GitHub (fast-forward, no conflicts), or have Claude fast-forward `main` locally and push.
@@ -56,23 +80,15 @@ Status as of 2026-11-12. Read this before starting work; update it when the stat
 4. **Deferred minor cleanups from the code review:**
    - `solveOblique` computes θmax and validation twice for θ inputs.
    - `normalShockRaw` recomputes M2² and p2/p1 inside its log helpers.
-   - `asin(1/M)` for the Mach angle is written in `isentropic.ts`, `obliqueShock.ts` and the fixture script; export one helper.
-5. **Git warns that LF line endings will be converted to CRLF** on every commit. A `.gitattributes` file with `* text=auto eol=lf` would silence the warning.
+5. ~~CRLF warnings~~: `.gitattributes` (`* text=auto eol=lf`) added.
 6. **The VT fixtures depend on a live third-party page.** Re-recording (`npm run fixtures:vt`) needs network access and breaks if VT changes its markup. The committed JSON is the source of truth for tests.
+7. **The cloud session could not push.** GitHub returned 403 ("Claude doesn't have GitHub access to samsamith26/compressible"). All UI work is committed locally on `claude/great-bell-lrkq1u`. Reconnect GitHub at https://claude.ai/connect-github (and install the Claude GitHub App on the repo if it isn't), then push that branch.
+8. **The D3 bundle and fonts** make the JS ~360 kB (115 kB gzipped). Fine for now; code-split per calculator if it grows.
 
 ## Next steps (in order)
-1. **Resolve open issues 1 and 2:** merge the physics PR and confirm the branch policy.
-2. **Pick the visual direction** with the frontend-design skill, before writing any UI code. Settle the typography, palette (light and dark), layout across the three calculators, and the style for charts and diagrams.
-3. **Write the UI implementation plan** with the writing-plans skill, saved to `docs/superpowers/plans/`. It should cover:
-   - **Setup:** install and configure Tailwind and shadcn/ui (check current docs via context7), plus `d3-scale` and `d3-shape`. Replace the Vite starter files.
-   - **App shell:** a responsive layout and a dark mode toggle, and the footer credit to the VT calculator.
-   - **Calculators:** a `useXxxSolver` hook and input/output components for each of `src/features/isentropic`, `normal-shock` and `oblique-shock`. Inputs update live, and errors appear inline using the `Result` messages.
-   - **Visualizations:**
-     - isentropic ratio plots vs M, with a marker at the current value
-     - before/after property comparison across shocks
-     - wedge/ramp diagram with the shock at the correct angle, including the detached case
-     - interactive θ-β-M chart with a draggable operating point
-   - **URL state:** a query-string sync hook for each calculator.
-   - **Verification:** Playwright checks at desktop and 375px width, in light and dark mode, including keyboard navigation and drag on the θ-β-M chart.
-4. **Execute that plan** test-first, with lint, typecheck and tests passing per task, and the code-review plugin at the end.
-5. **Phase 2 (later):** the nozzle simulator, built as `src/physics/nozzle.ts` plus `src/features/nozzle/`. It reuses `areaRatio`, `machFromAreaRatio`, `pressureRatio` and `normalShock`.
+1. **Decisions for you:**
+   - Merge the physics PR (open issue 1), and decide the branch policy (issue 2). The UI branch `claude/great-bell-lrkq1u` contains the physics commits plus the UI, so merging it alone also brings in the physics.
+   - Review the visual direction (open it with `npm run dev`). If you'd rather run the frontend-design skill locally for a second opinion, the tokens live in one place (`src/index.css`).
+   - Fix GitHub access for cloud sessions and push the branch (open issue 7).
+2. **Small follow-ups:** the remaining review cleanups in open issue 4; optional `prefers-color-scheme` change listener in `useTheme` (it follows the OS only at load); a "copy link" button next to the tabs (the URL already holds the state).
+3. **Phase 2 (later):** the nozzle simulator, built as `src/physics/nozzle.ts` plus `src/features/nozzle/`. It reuses `areaRatio`, `machFromAreaRatio`, `pressureRatio` and `normalShock`, and can reuse `RatioChart`'s axes, `JumpChart`, `useSearchParams` and the calculator layout.
