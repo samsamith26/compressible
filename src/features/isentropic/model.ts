@@ -3,9 +3,8 @@ import {
   solveIsentropic,
   type IsentropicInputKind,
   type IsentropicState,
-  type Result,
 } from '@/physics'
-import { parseField, type Quantity } from '@/lib/fields'
+import { attribute, parseField, type FieldResult, type Quantity } from '@/lib/fields'
 
 export const ISENTROPIC_KINDS: readonly IsentropicInputKind[] = [
   'mach',
@@ -48,12 +47,12 @@ export function solveIsentropicText(
   kind: IsentropicInputKind,
   valueText: string,
   gammaText: string,
-): Result<IsentropicState> {
+): FieldResult<IsentropicState, 'value' | 'gamma'> {
   const gamma = parseField(gammaText, 'γ')
-  if (!gamma.ok) return gamma
+  if (!gamma.ok) return attribute(gamma, 'gamma')
   const value = parseField(valueText, ISENTROPIC_INPUTS[kind].name)
-  if (!value.ok) return value
-  return solveIsentropic({ kind, value: value.value }, gamma.value)
+  if (!value.ok) return attribute(value, 'value')
+  return attribute(solveIsentropic({ kind, value: value.value }, gamma.value), 'value')
 }
 
 /** The value `kind` takes in `state`, or null when the state cannot express it (angles below M = 1). */

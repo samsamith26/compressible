@@ -2,9 +2,8 @@ import {
   solveNormalShock,
   type NormalShockInputKind,
   type NormalShockState,
-  type Result,
 } from '@/physics'
-import { parseField, type Quantity } from '@/lib/fields'
+import { attribute, parseField, type FieldResult, type Quantity } from '@/lib/fields'
 
 export const NORMAL_SHOCK_KINDS: readonly NormalShockInputKind[] = [
   'm1',
@@ -41,12 +40,12 @@ export function solveNormalShockText(
   kind: NormalShockInputKind,
   valueText: string,
   gammaText: string,
-): Result<NormalShockState> {
+): FieldResult<NormalShockState, 'value' | 'gamma'> {
   const gamma = parseField(gammaText, 'γ')
-  if (!gamma.ok) return gamma
+  if (!gamma.ok) return attribute(gamma, 'gamma')
   const value = parseField(valueText, NORMAL_SHOCK_QUANTITIES[kind].name)
-  if (!value.ok) return value
-  return solveNormalShock({ kind, value: value.value }, gamma.value)
+  if (!value.ok) return attribute(value, 'value')
+  return attribute(solveNormalShock({ kind, value: value.value }, gamma.value), 'value')
 }
 
 export function normalShockValue(state: NormalShockState, kind: NormalShockInputKind): number {

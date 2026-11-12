@@ -6,6 +6,8 @@ export default mergeConfig(
   defineConfig({
     test: {
       include: ['src/**/*.test.ts', 'src/**/*.test.tsx'],
+      // Process the theme stylesheet so tests can import it with ?raw (others stay empty).
+      css: { include: [/index\.css/] },
       coverage: {
         provider: 'v8',
         include: ['src/physics/**'],

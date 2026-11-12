@@ -38,5 +38,6 @@ describe('toQueryNumber', () => {
     expect(toQueryNumber(0.1 + 0.2)).toBe('0.3')
     expect(toQueryNumber(39.31393184312)).toBe('39.31393184')
     expect(toQueryNumber(1e-7)).toBe('1e-7')
+    expect(toQueryNumber(2.13719, 4)).toBe('2.137')
   })
 })

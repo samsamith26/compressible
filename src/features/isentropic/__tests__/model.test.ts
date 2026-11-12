@@ -18,13 +18,13 @@ describe('solveIsentropicText', () => {
     const v = solveIsentropicText('mach', '2.', '1.4')
     expect(v.ok).toBe(true)
     const bad = solveIsentropicText('mach', 'x', '1.4')
-    expect(!bad.ok && bad.error.message).toBe('Enter a number for Mach number')
+    expect(!bad.ok && bad.message).toBe('Enter a number for Mach number')
     const g = solveIsentropicText('mach', '2', '')
-    expect(!g.ok && g.error.message).toBe('Enter a number for γ')
+    expect(!g.ok && g.message).toBe('Enter a number for γ')
   })
   it('passes physics errors through', () => {
     const r = solveIsentropicText('pP0', '2', '1.4')
-    expect(!r.ok && r.error.message).toMatch(/p\/p0/)
+    expect(!r.ok && r.message).toMatch(/p\/p0/)
   })
 })
 
@@ -61,5 +61,14 @@ describe('inputFromMach', () => {
   it('falls back to Mach for supersonic-only kinds below M = 1', () => {
     expect(inputFromMach('machAngleDeg', 0.5, gamma)).toEqual({ kind: 'mach', value: 0.5 })
     expect(inputFromMach('prandtlMeyerDeg', 0.8, gamma)).toEqual({ kind: 'mach', value: 0.8 })
+  })
+})
+
+describe('error attribution', () => {
+  it('assigns γ errors to γ and the rest to the value field', () => {
+    const g = solveIsentropicText('mach', '2', '1')
+    expect(!g.ok && g.field).toBe('gamma')
+    const v = solveIsentropicText('mach', '-1', '1.4')
+    expect(!v.ok && v.field).toBe('value')
   })
 })

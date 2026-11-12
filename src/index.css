@@ -16,6 +16,8 @@
   --up: #1f5fbf;
   --down: #a34b06;
   --danger: #b42318;
+  --teal: #0f6b64;
+  --violet: #6a32c9;
   --ring: #1f5fbf;
   color-scheme: light;
 }
@@ -30,6 +32,8 @@
   --up: #6fa8ff;
   --down: #ffad5c;
   --danger: #ff8a7a;
+  --teal: #4fd1c5;
+  --violet: #b99cf7;
   --ring: #6fa8ff;
   color-scheme: dark;
 }
@@ -44,6 +48,8 @@
   --color-up: var(--up);
   --color-down: var(--down);
   --color-danger: var(--danger);
+  --color-teal: var(--teal);
+  --color-violet: var(--violet);
   --color-ring: var(--ring);
   --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', monospace;
@@ -117,4 +123,23 @@
     animation: none !important;
     transition: none !important;
   }
+}
+
+/* Shock-tube particles: each region drifts one particle spacing per period (spacing ∝ velocity). */
+@keyframes drift {
+  to {
+    transform: translateX(var(--spacing));
+  }
+}
+
+.drift {
+  animation: drift 1.4s linear infinite;
+}
+
+/* Streamlines morph to new shapes (browsers without `d` transitions simply jump). */
+.glide-path {
+  transition: d 160ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.dragging .glide-path {
+  transition: none;
 }

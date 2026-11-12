@@ -28,7 +28,7 @@ describe('solveObliqueText', () => {
     ] as const
     for (const [input, name] of cases) {
       const r = solveObliqueText(input)
-      expect(!r.ok && r.error.message).toBe(`Enter a number for ${name}`)
+      expect(!r.ok && r.message).toBe(`Enter a number for ${name}`)
     }
   })
 
@@ -59,5 +59,19 @@ describe('inputFromBeta', () => {
     expect(weak.kind).toBe('thetaWeak')
     expect(weak.value).toBeCloseTo(10, 2)
     expect(inputFromBeta('thetaWeak', 2, 80, bMax, 1.4).kind).toBe('thetaStrong')
+  })
+})
+
+describe('error attribution', () => {
+  it('puts each error on the field that caused it', () => {
+    const cases = [
+      [{ m1: '2', gamma: '0.9', kind: 'beta', value: '40' }, 'gamma'],
+      [{ m1: '0.8', gamma: '1.4', kind: 'beta', value: '40' }, 'm1'],
+      [{ m1: '2', gamma: '1.4', kind: 'beta', value: '20' }, 'value'],
+    ] as const
+    for (const [input, field] of cases) {
+      const r = solveObliqueText(input)
+      expect(!r.ok && r.field).toBe(field)
+    }
   })
 })

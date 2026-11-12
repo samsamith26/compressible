@@ -1,12 +1,12 @@
 import {
+  maxDeflection,
   solveOblique,
   thetaFromBetaDeg,
   type ObliqueInputKind,
   type ObliqueShockState,
   type ObliqueSolution,
-  type Result,
 } from '@/physics'
-import { parseField, type Quantity } from '@/lib/fields'
+import { attribute, parseField, type FieldResult, type Quantity } from '@/lib/fields'
 
 export const OBLIQUE_KINDS: readonly ObliqueInputKind[] = ['thetaWeak', 'thetaStrong', 'beta', 'm1n']
 
@@ -40,14 +40,19 @@ export interface ObliqueText {
   readonly gamma: string
 }
 
-export function solveObliqueText(input: ObliqueText): Result<ObliqueSolution> {
+export type ObliqueField = 'gamma' | 'm1' | 'value'
+
+export function solveObliqueText(input: ObliqueText): FieldResult<ObliqueSolution, ObliqueField> {
   const gamma = parseField(input.gamma, 'γ')
-  if (!gamma.ok) return gamma
+  if (!gamma.ok) return attribute(gamma, 'gamma')
   const m1 = parseField(input.m1, M1_QUANTITY.name)
-  if (!m1.ok) return m1
+  if (!m1.ok) return attribute(m1, 'm1')
+  // Check the upstream state first, so an M1 problem is reported on the M1 field.
+  const upstream = maxDeflection(m1.value, gamma.value)
+  if (!upstream.ok) return attribute(upstream, 'm1')
   const value = parseField(input.value, OBLIQUE_INPUTS[input.kind].name)
-  if (!value.ok) return value
-  return solveOblique(m1.value, { kind: input.kind, value: value.value }, gamma.value)
+  if (!value.ok) return attribute(value, 'value')
+  return attribute(solveOblique(m1.value, { kind: input.kind, value: value.value }, gamma.value), 'value')
 }
 
 export function obliqueValue(state: ObliqueShockState, kind: ObliqueInputKind): number {

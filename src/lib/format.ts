@@ -16,6 +16,11 @@ function superscript(digits: string): string {
   return [...digits].map((c) => SUPERSCRIPT[c] ?? c).join('')
 }
 
+/** "10⁻⁵" for e = -5. */
+export function powerOfTen(e: number): string {
+  return `10${superscript(String(e))}`
+}
+
 /**
  * Format a result for display: `sig` significant figures, scientific notation (×10ⁿ) outside
  * [1e-4, 1e5), a typographic minus, and a dash for missing values.
@@ -33,7 +38,7 @@ export function formatValue(x: number | null, sig = 5): string {
   return sign + abs.toPrecision(sig)
 }
 
-/** Compact, stable text for a number in a URL: 10 significant figures, no trailing zeros. */
-export function toQueryNumber(x: number): string {
-  return String(Number(x.toPrecision(10)))
+/** Compact, stable text for a number in a URL or input: `sig` significant figures, no trailing zeros. */
+export function toQueryNumber(x: number, sig = 10): string {
+  return String(Number(x.toPrecision(sig)))
 }

@@ -1,6 +1,5 @@
-import { readFileSync } from 'node:fs'
-import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
+import css from '../../index.css?raw'
 import { contrastRatio, readThemeTokens } from '../contrast'
 
 describe('contrastRatio', () => {
@@ -15,9 +14,8 @@ describe('contrastRatio', () => {
 })
 
 describe('theme palette (src/index.css)', () => {
-  const css = readFileSync(fileURLToPath(new URL('../../index.css', import.meta.url)), 'utf8')
   const themes = { light: readThemeTokens(css, ':root'), dark: readThemeTokens(css, '.dark') }
-  const textTokens = ['ink', 'muted', 'up', 'down', 'danger'] as const
+  const textTokens = ['ink', 'muted', 'up', 'down', 'danger', 'teal', 'violet'] as const
   const grounds = ['paper', 'panel'] as const
 
   for (const [name, tokens] of Object.entries(themes)) {
