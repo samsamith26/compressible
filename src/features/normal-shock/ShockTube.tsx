@@ -4,7 +4,7 @@ import { cn } from '@/lib/cn'
 import { formatValue } from '@/lib/format'
 import type { NormalShockState } from '@/physics'
 
-const HEIGHT = 168
+const HEIGHT = 160
 const DUCT_TOP = 34
 const DUCT_BOTTOM = 134
 const ROWS = 5
@@ -45,7 +45,8 @@ export function ShockTube({ state, stale }: ShockTubeProps) {
   const [ref, width] = useElementWidth<HTMLDivElement>()
   const shockX = Math.round(width * 0.46)
   const downSpacing = UPSTREAM_SPACING / state.rho2Rho1
-  const arrowUp = Math.min(shockX - 40, 90)
+  // Leave room after each arrow for its Mach label.
+  const arrowUp = Math.min(shockX * 0.4, 90)
   const arrowDown = arrowUp / state.rho2Rho1
 
   return (
@@ -78,18 +79,18 @@ export function ShockTube({ state, stale }: ShockTubeProps) {
           <text x={12} y={22} className="fill-up font-medium">
             ① upstream
           </text>
-          <text x={shockX + 12} y={22} className="fill-down font-medium">
+          <text x={width - 12} y={22} textAnchor="end" className="fill-down font-medium">
             ② downstream
           </text>
-          <text x={shockX} y={HEIGHT - 6} textAnchor="middle" className="fill-muted text-[11px]">
+          <text x={shockX} y={DUCT_TOP - 10} textAnchor="middle" className="fill-muted text-[11px]">
             shock
           </text>
           <line x1={12} x2={12 + arrowUp} y1={DUCT_BOTTOM + 14} y2={DUCT_BOTTOM + 14} className="stroke-ink" strokeWidth={1.5} markerEnd={`url(#${clipUp}-arrow)`} />
           <line x1={shockX + 12} x2={shockX + 12 + arrowDown} y1={DUCT_BOTTOM + 14} y2={DUCT_BOTTOM + 14} className="stroke-ink" strokeWidth={1.5} markerEnd={`url(#${clipUp}-arrow)`} />
-          <text x={shockX - 10} y={22} textAnchor="end" className="num fill-ink">
+          <text x={20 + arrowUp} y={DUCT_BOTTOM + 14} dy="0.32em" className="num fill-ink">
             M₁ {formatValue(state.m1, 4)}
           </text>
-          <text x={width - 10} y={22} textAnchor="end" className="num fill-ink">
+          <text x={shockX + 20 + arrowDown} y={DUCT_BOTTOM + 14} dy="0.32em" className="num fill-ink">
             M₂ {formatValue(state.m2, 4)}
           </text>
         </g>
