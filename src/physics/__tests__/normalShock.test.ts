@@ -120,9 +120,34 @@ describe('review focus', () => {
     }
   })
 
-  it('reports NO_BRACKET for ratios beyond the M1 search range', () => {
-    expectError(m1FromP02P01(1e-300, 1.4), 'NO_BRACKET')
-    expectError(m1FromP1P02(1e-300, 1.4), 'NO_BRACKET')
+  it('caps M1 at 1e6: no NaN results from overflow', () => {
+    expectBounds(normalShock(2e154, 1.4), [1, 1e6])
+    expectError(normalShock(1e200, 1.4), 'OUT_OF_RANGE')
+    expect(unwrap(normalShock(1e6, 1.4)).t2T1).toBeGreaterThan(1)
+  })
+
+  it('ratios beyond the capped M1 domain are OUT_OF_RANGE, named by the input', () => {
+    for (const [r, name] of [
+      [m1FromP02P01(1e-300, 1.4), 'p02/p01'],
+      [m1FromP1P02(1e-300, 1.4), 'p1/p02'],
+      [m1FromP2P1(1e300, 1.4), 'p2/p1'],
+      [m1FromT2T1(1e300, 1.4), 'T2/T1'],
+    ] as const) {
+      expectError(r, 'OUT_OF_RANGE')
+      expect(!r.ok && r.error.message).toContain(name)
+    }
+  })
+
+  it('accepts the extreme ratios that M1 = 1e6 itself produces', () => {
+    const s = unwrap(normalShock(1e6, 1.4))
+    for (const m of [
+      m1FromP2P1(s.p2P1, 1.4),
+      m1FromT2T1(s.t2T1, 1.4),
+      m1FromP02P01(s.p02P01, 1.4),
+      m1FromP1P02(s.p1P02, 1.4),
+    ]) {
+      expectRel(unwrap(m), 1e6, 1e-6)
+    }
   })
 
   it('p1/p02 at its maximum gives M1 = 1', () => {

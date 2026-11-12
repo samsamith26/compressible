@@ -3,7 +3,7 @@
  * Compressible Flow, ch. 4). θ is the flow turning (wedge) angle, β the wave angle.
  */
 
-import { requireInRange, validateGamma } from './gas'
+import { MACH_MAX, requireInRange, validateGamma } from './gas'
 import { normalShockRaw } from './normalShock'
 import { degToRad, findRoot, radToDeg } from './numeric'
 import { ok, type Result } from './result'
@@ -37,7 +37,7 @@ export type ObliqueFromTheta =
     }
   | { readonly kind: 'detached'; readonly max: MaxDeflection }
 
-const SUPERSONIC = { lo: 1, hi: Infinity, loInclusive: false, hiInclusive: false }
+const SUPERSONIC = { lo: 1, hi: MACH_MAX, loInclusive: false, hiInclusive: true }
 /** θ within this many degrees of θmax is treated as exactly θmax. */
 const THETA_MAX_TOL = 1e-12
 

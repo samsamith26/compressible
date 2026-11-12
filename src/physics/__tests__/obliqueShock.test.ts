@@ -64,6 +64,12 @@ describe('obliqueFromTheta', () => {
     expectRel(strong.p2P1, unwrap(normalShock(2, 1.4)).p2P1, 1e-12)
   })
 
+  it('caps M1 at 1e6: no NaN results from overflow', () => {
+    expectError(obliqueFromTheta(1e200, 10, 1.4), 'OUT_OF_RANGE')
+    expectError(obliqueFromBeta(1e200, 45, 1.4), 'OUT_OF_RANGE')
+    expectError(maxDeflection(2e6, 1.4), 'OUT_OF_RANGE')
+  })
+
   it('rejects negative θ, M1 ≤ 1, bad γ and NaN', () => {
     expectError(obliqueFromTheta(2, -1, 1.4), 'OUT_OF_RANGE')
     expectError(obliqueFromTheta(1, 5, 1.4), 'OUT_OF_RANGE')

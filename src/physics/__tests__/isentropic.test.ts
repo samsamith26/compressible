@@ -146,10 +146,44 @@ describe('review focus', () => {
     expect(unwrap(machFromAreaRatio(1, 1.4, 'supersonic'))).toBe(1)
   })
 
-  it('reports NO_BRACKET (not a hang) for ratios beyond the Mach search range', () => {
-    expectError(machFromAreaRatio(1e40, 1.4, 'supersonic'), 'NO_BRACKET')
-    expectError(machFromAreaRatio(1e40, 1.4, 'subsonic'), 'NO_BRACKET')
-    expectError(machFromPrandtlMeyer(maxPrandtlMeyerDeg(1.4) - 1e-7, 1.4), 'NO_BRACKET')
+  it('caps Mach at 1e6 and reports OUT_OF_RANGE beyond it', () => {
+    expectBounds(isentropicFromMach(2e6, 1.4), [0, 1e6])
+    expect(unwrap(isentropicFromMach(1e6, 1.4)).mach).toBe(1e6)
+  })
+
+  it('ratios the capped Mach domain cannot reach are OUT_OF_RANGE, named by the input', () => {
+    const sup = machFromAreaRatio(1e40, 1.4, 'supersonic')
+    expectError(sup, 'OUT_OF_RANGE')
+    expectBounds(sup, [1, areaRatio(1e6, 1.4)])
+    expectError(machFromAreaRatio(1e8, 3, 'supersonic'), 'OUT_OF_RANGE')
+    const sub = machFromAreaRatio(1e12, 1.4, 'subsonic')
+    expectError(sub, 'OUT_OF_RANGE')
+    expectBounds(sub, [1, areaRatio(1e-12, 1.4)])
+    expectError(machFromPrandtlMeyer(maxPrandtlMeyerDeg(1.4) - 1e-7, 1.4), 'OUT_OF_RANGE')
+    const rho = machFromRhoRho0(1e-300, 3)
+    expectError(rho, 'OUT_OF_RANGE')
+    expect(!rho.ok && rho.error.message).toContain('ρ/ρ0')
+    expectError(machFromTT0(1e-320, 1.4), 'OUT_OF_RANGE')
+    expectError(machFromMachAngle(1e-6), 'OUT_OF_RANGE')
+  })
+
+  it('p/p0 that rounds to 1 is rejected by its own name, not as T/T0 or M', () => {
+    const r = machFromPP0(0.9999999999999999, 1.4)
+    expectError(r, 'OUT_OF_RANGE')
+    expect(!r.ok && r.error.message).toContain('p/p0')
+  })
+
+  it('accepts the extreme ratios that M = 1e6 itself produces', () => {
+    const s = unwrap(isentropicFromMach(1e6, 1.4))
+    expectRel(unwrap(machFromPP0(s.pP0, 1.4)), 1e6, 1e-9)
+    expectRel(unwrap(machFromAreaRatio(s.aAStar, 1.4, 'supersonic')), 1e6, 1e-9)
+    expectRel(unwrap(machFromAreaRatio(areaRatio(1e-12, 1.4), 1.4, 'subsonic')), 1e-12, 1e-9)
+  })
+
+  it('γ near 1 keeps an unbounded supersonic A/A* range without overflow', () => {
+    // areaRatio(1e6, 1.01) overflows to Infinity, so every finite A/A* ≥ 1 is reachable.
+    expect(unwrap(machFromAreaRatio(1e300, 1.01, 'supersonic'))).toBeGreaterThan(1)
+    expect(unwrap(machFromPP0(1e-300, 1.01))).toBeGreaterThan(1)
   })
 
   it('ν = 0 gives M = 1; ν ≥ ν_max is out of range', () => {

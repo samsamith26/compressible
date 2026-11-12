@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { degToRad, expandUpper, findRoot, radToDeg } from '../numeric'
+import { degToRad, findRoot, radToDeg } from '../numeric'
 
 function value(r: ReturnType<typeof findRoot>): number {
   if (!r.ok) throw new Error(`expected ok, got ${r.error.code}: ${r.error.message}`)
@@ -29,6 +29,10 @@ describe('findRoot (Brent)', () => {
     expect(value(findRoot((x) => (x - 1e-3) ** 3, 0, 10))).toBeCloseTo(1e-3, 4)
   })
 
+  it('compares signs without underflow for tiny function values', () => {
+    expect(value(findRoot((x) => (x - 1) * 1e-200, 0, 2))).toBeCloseTo(1, 12)
+  })
+
   it('reports NO_BRACKET when the signs match', () => {
     const r = findRoot((x) => x * x + 1, -1, 1)
     expect(!r.ok && r.error.code).toBe('NO_BRACKET')
@@ -37,22 +41,6 @@ describe('findRoot (Brent)', () => {
   it('reports NO_CONVERGENCE when iterations run out', () => {
     const r = findRoot(Math.cos, 0, 3, { maxIter: 1 })
     expect(!r.ok && r.error.code).toBe('NO_CONVERGENCE')
-  })
-})
-
-describe('expandUpper', () => {
-  it('doubles until the sign changes', () => {
-    const r = expandUpper((x) => x - 1000, 1, 2, 1e6)
-    expect(r.ok && r.value >= 1000).toBe(true)
-  })
-
-  it('returns start when it already brackets', () => {
-    expect(expandUpper((x) => x - 1.5, 1, 2, 10)).toEqual({ ok: true, value: 2 })
-  })
-
-  it('reports NO_BRACKET past the limit', () => {
-    const r = expandUpper(() => -1, 0, 1, 1e3)
-    expect(!r.ok && r.error.code).toBe('NO_BRACKET')
   })
 })
 

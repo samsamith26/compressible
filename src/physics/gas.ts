@@ -9,6 +9,13 @@ export interface Range {
   readonly hiInclusive: boolean
 }
 
+/**
+ * Mach domain every solver works in. Mach numbers outside it overflow (M² past
+ * ~1e154) or underflow, so each input's valid range is the image of this domain.
+ */
+export const MACH_MAX = 1e6
+export const MACH_MIN = 1e-12
+
 export function requireFinite(name: string, x: number): Result<number> {
   return Number.isFinite(x) ? ok(x) : err('NOT_FINITE', `${name} must be a finite number`)
 }
@@ -38,7 +45,10 @@ export function requireInRange(name: string, x: number, range: Range): Result<nu
   if (!finite.ok) return finite
   const aboveLo = range.loInclusive ? x >= range.lo : x > range.lo
   const belowHi = range.hiInclusive ? x <= range.hi : x < range.hi
-  return aboveLo && belowHi
-    ? ok(x)
-    : err('OUT_OF_RANGE', describeRange(name, range), [range.lo, range.hi])
+  return aboveLo && belowHi ? ok(x) : outOfRange(name, range)
+}
+
+/** The OUT_OF_RANGE error requireInRange would give, for checks it cannot express. */
+export function outOfRange<T>(name: string, range: Range): Result<T> {
+  return err('OUT_OF_RANGE', describeRange(name, range), [range.lo, range.hi])
 }

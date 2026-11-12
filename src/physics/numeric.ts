@@ -36,7 +36,8 @@ export function findRoot(
   let fb = f(b)
   if (fa === 0) return ok(a)
   if (fb === 0) return ok(b)
-  if (!(fa * fb < 0)) {
+  // Compare signs, not the product fa·fb, which underflows to 0 for tiny values.
+  if (Number.isNaN(fa) || Number.isNaN(fb) || Math.sign(fa) === Math.sign(fb)) {
     return err('NO_BRACKET', `No sign change between ${lo} and ${hi}`)
   }
 
@@ -47,7 +48,7 @@ export function findRoot(
   let e = d
 
   for (let i = 0; i < maxIter; i++) {
-    if (fb * fc > 0) {
+    if (Math.sign(fb) === Math.sign(fc)) {
       c = a
       fc = fa
       d = b - a
@@ -101,21 +102,4 @@ export function findRoot(
     fb = f(b)
   }
   return err('NO_CONVERGENCE', `Root finder did not converge in ${maxIter} iterations`)
-}
-
-/**
- * Find an upper bracket end: starting at `start`, double x until f(x) differs
- * in sign from f(lo). Used for open-ended ranges such as supersonic Mach.
- */
-export function expandUpper(
-  f: (x: number) => number,
-  lo: number,
-  start: number,
-  limit: number,
-): Result<number> {
-  const signLo = Math.sign(f(lo))
-  for (let x = start; x <= limit; x *= 2) {
-    if (Math.sign(f(x)) !== signLo) return ok(x)
-  }
-  return err('NO_BRACKET', `No sign change found below ${limit}`)
 }
