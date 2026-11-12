@@ -1,0 +1,1404 @@
+[
+  {
+    "gamma": 1.2,
+    "inputKind": "mach",
+    "inputValue": 0.5,
+    "outputs": {
+      "mach": "0.5",
+      "machAngleDeg": "",
+      "prandtlMeyerDeg": "",
+      "pP0": "0.86229686",
+      "rhoRho0": "0.88385428",
+      "tT0": "0.97560975",
+      "pPStar": "1.52761149",
+      "rhoRhoStar": "1.42345616",
+      "tTStar": "1.07317073",
+      "aAStar": "1.35628664"
+    }
+  },
+  {
+    "gamma": 1.2,
+    "inputKind": "mach",
+    "inputValue": 2,
+    "outputs": {
+      "mach": "2",
+      "machAngleDeg": "29.9999999",
+      "prandtlMeyerDeg": "31.4560868",
+      "pP0": "0.13281030",
+      "rhoRho0": "0.18593443",
+      "tT0": "0.71428571",
+      "pPStar": "0.23528156",
+      "rhoRhoStar": "0.29944926",
+      "tTStar": "0.78571428",
+      "aAStar": "1.88371168"
+    }
+  },
+  {
+    "gamma": 1.2,
+    "inputKind": "mach",
+    "inputValue": 4,
+    "outputs": {
+      "mach": "4",
+      "machAngleDeg": "14.4775121",
+      "prandtlMeyerDeg": "88.4014985",
+      "pP0": "0.00323712",
+      "rhoRho0": "0.00841653",
+      "tT0": "0.38461538",
+      "pPStar": "0.00573477",
+      "rhoRhoStar": "0.01355491",
+      "tTStar": "0.42307692",
+      "aAStar": "28.3552613"
+    }
+  },
+  {
+    "gamma": 1.2,
+    "inputKind": "mach",
+    "inputValue": -1,
+    "outputs": null,
+    "alert": "M must be greater than 0"
+  },
+  {
+    "gamma": 1.2,
+    "inputKind": "tT0",
+    "inputValue": 0.9756,
+    "outputs": {
+      "mach": "0.50010249",
+      "machAngleDeg": "",
+      "prandtlMeyerDeg": "",
+      "pP0": "0.86224512",
+      "rhoRho0": "0.88381009",
+      "tT0": "0.97560000",
+      "pPStar": "1.52751984",
+      "rhoRhoStar": "1.42338499",
+      "tTStar": "1.07316000",
+      "aAStar": "1.35608327"
+    }
+  },
+  {
+    "gamma": 1.2,
+    "inputKind": "tT0",
+    "inputValue": 0.7143,
+    "outputs": {
+      "mach": "1.99993000",
+      "machAngleDeg": "30.0011578",
+      "prandtlMeyerDeg": "31.4536058",
+      "pP0": "0.13282624",
+      "rhoRho0": "0.18595302",
+      "tT0": "0.7143",
+      "pPStar": "0.23530979",
+      "rhoRhoStar": "0.29947920",
+      "tTStar": "0.78573000",
+      "aAStar": "1.88357041"
+    }
+  },
+  {
+    "gamma": 1.2,
+    "inputKind": "tT0",
+    "inputValue": 0.3846,
+    "outputs": {
+      "mach": "4.00013000",
+      "machAngleDeg": "14.4770313",
+      "prandtlMeyerDeg": "88.4042724",
+      "pP0": "0.00323635",
+      "rhoRho0": "0.00841485",
+      "tT0": "0.3846",
+      "pPStar": "0.00573339",
+      "rhoRhoStar": "0.01355220",
+      "tTStar": "0.42306000",
+      "aAStar": "28.3605785"
+    }
+  },
+  {
+    "gamma": 1.2,
+    "inputKind": "tT0",
+    "inputValue": 1.5,
+    "outputs": null,
+    "alert": "T/T0 must be between 0 and 1"
+  },
+  {
+    "gamma": 1.2,
+    "inputKind": "pP0",
+    "inputValue": 0.8623,
+    "outputs": {
+      "mach": "0.49999379",
+      "machAngleDeg": "",
+      "prandtlMeyerDeg": "",
+      "pP0": "0.86230000",
+      "rhoRho0": "0.88385696",
+      "tT0": "0.97561034",
+      "pPStar": "1.52761705",
+      "rhoRhoStar": "1.42346048",
+      "tTStar": "1.07317138",
+      "aAStar": "1.35629897"
+    }
+  },
+  {
+    "gamma": 1.2,
+    "inputKind": "pP0",
+    "inputValue": 0.1328,
+    "outputs": {
+      "mach": "2.00004527",
+      "machAngleDeg": "29.9992511",
+      "prandtlMeyerDeg": "31.4576916",
+      "pP0": "0.13279999",
+      "rhoRho0": "0.18592240",
+      "tT0": "0.71427647",
+      "pPStar": "0.23526330",
+      "rhoRhoStar": "0.29942989",
+      "tTStar": "0.78570412",
+      "aAStar": "1.88380307"
+    }
+  },
+  {
+    "gamma": 1.2,
+    "inputKind": "pP0",
+    "inputValue": 0.003237,
+    "outputs": {
+      "mach": "4.00002146",
+      "machAngleDeg": "14.4774327",
+      "prandtlMeyerDeg": "88.4019566",
+      "pP0": "0.00323700",
+      "rhoRho0": "0.00841625",
+      "tT0": "0.38461284",
+      "pPStar": "0.00573454",
+      "rhoRhoStar": "0.01355446",
+      "tTStar": "0.42307412",
+      "aAStar": "28.3561393"
+    }
+  },
+  {
+    "gamma": 1.2,
+    "inputKind": "pP0",
+    "inputValue": 1.5,
+    "outputs": null,
+    "alert": "p/p0 must be between 0 and 1"
+  },
+  {
+    "gamma": 1.2,
+    "inputKind": "rhoRho0",
+    "inputValue": 0.8839,
+    "outputs": {
+      "mach": "0.49989396",
+      "machAngleDeg": "",
+      "prandtlMeyerDeg": "",
+      "pP0": "0.86235038",
+      "rhoRho0": "0.88390000",
+      "tT0": "0.97561984",
+      "pPStar": "1.52770630",
+      "rhoRhoStar": "1.42352978",
+      "tTStar": "1.07318183",
+      "aAStar": "1.35649715"
+    }
+  },
+  {
+    "gamma": 1.2,
+    "inputKind": "rhoRho0",
+    "inputValue": 0.1859,
+    "outputs": {
+      "mach": "2.00012963",
+      "machAngleDeg": "29.9978559",
+      "prandtlMeyerDeg": "31.4606815",
+      "pP0": "0.13278079",
+      "rhoRho0": "0.1859",
+      "tT0": "0.71425925",
+      "pPStar": "0.23522927",
+      "rhoRhoStar": "0.29939380",
+      "tTStar": "0.78568518",
+      "aAStar": "1.88397335"
+    }
+  },
+  {
+    "gamma": 1.2,
+    "inputKind": "rhoRho0",
+    "inputValue": 0.008417,
+    "outputs": {
+      "mach": "3.99996397",
+      "machAngleDeg": "14.4776454",
+      "prandtlMeyerDeg": "88.4007300",
+      "pP0": "0.00323734",
+      "rhoRho0": "0.00841699",
+      "tT0": "0.38461964",
+      "pPStar": "0.00573515",
+      "rhoRhoStar": "0.01355566",
+      "tTStar": "0.42308161",
+      "aAStar": "28.3537882"
+    }
+  },
+  {
+    "gamma": 1.2,
+    "inputKind": "rhoRho0",
+    "inputValue": 1.5,
+    "outputs": null,
+    "alert": "rho/rho0 must be between 0 and 1"
+  },
+  {
+    "gamma": 1.2,
+    "inputKind": "areaSub",
+    "inputValue": 3.026,
+    "outputs": {
+      "mach": "0.19998826",
+      "machAngleDeg": "",
+      "prandtlMeyerDeg": "",
+      "pP0": "0.97633518",
+      "rhoRho0": "0.98024007",
+      "tT0": "0.99601640",
+      "pPStar": "1.72963734",
+      "rhoRhoStar": "1.57868643",
+      "tTStar": "1.09561804",
+      "aAStar": "3.02600772"
+    }
+  },
+  {
+    "gamma": 1.2,
+    "inputKind": "areaSub",
+    "inputValue": 1.356,
+    "outputs": {
+      "mach": "0.50014446",
+      "machAngleDeg": "",
+      "prandtlMeyerDeg": "",
+      "pP0": "0.86222394",
+      "rhoRho0": "0.88379199",
+      "tT0": "0.97559600",
+      "pPStar": "1.52748230",
+      "rhoRhoStar": "1.42335584",
+      "tTStar": "1.07315560",
+      "aAStar": "1.35600002"
+    }
+  },
+  {
+    "gamma": 1.2,
+    "inputKind": "areaSub",
+    "inputValue": 1.01,
+    "outputs": {
+      "mach": "0.89787450",
+      "machAngleDeg": "",
+      "prandtlMeyerDeg": "",
+      "pP0": "0.62801085",
+      "rhoRho0": "0.67863974",
+      "tT0": "0.92539651",
+      "pPStar": "1.11255953",
+      "rhoRhoStar": "1.09295609",
+      "tTStar": "1.01793616",
+      "aAStar": "1.01000000"
+    }
+  },
+  {
+    "gamma": 1.2,
+    "inputKind": "areaSub",
+    "inputValue": 0.5,
+    "outputs": null,
+    "alert": "A/A* must be greater than 1"
+  },
+  {
+    "gamma": 1.2,
+    "inputKind": "areaSup",
+    "inputValue": 1.205,
+    "outputs": {
+      "mach": "1.49996510",
+      "machAngleDeg": "41.8115070",
+      "prandtlMeyerDeg": "13.5943624",
+      "pP0": "0.29594140",
+      "rhoRho0": "0.36252512",
+      "tT0": "0.81633350",
+      "pPStar": "0.52427825",
+      "rhoRhoStar": "0.58385034",
+      "tTStar": "0.89796685",
+      "aAStar": "1.20500029"
+    }
+  },
+  {
+    "gamma": 1.2,
+    "inputKind": "areaSup",
+    "inputValue": 1.884,
+    "outputs": {
+      "mach": "2.00014285",
+      "machAngleDeg": "29.9976374",
+      "prandtlMeyerDeg": "31.4611498",
+      "pP0": "0.13277778",
+      "rhoRho0": "0.18589649",
+      "tT0": "0.71425656",
+      "pPStar": "0.23522395",
+      "rhoRhoStar": "0.29938815",
+      "tTStar": "0.78568221",
+      "aAStar": "1.88400003"
+    }
+  },
+  {
+    "gamma": 1.2,
+    "inputKind": "areaSup",
+    "inputValue": 28.36,
+    "outputs": {
+      "mach": "4.00011589",
+      "machAngleDeg": "14.4770835",
+      "prandtlMeyerDeg": "88.4039713",
+      "pP0": "0.00323643",
+      "rhoRho0": "0.00841503",
+      "tT0": "0.38460167",
+      "pPStar": "0.00573354",
+      "rhoRhoStar": "0.01355249",
+      "tTStar": "0.42306183",
+      "aAStar": "28.3600012"
+    }
+  },
+  {
+    "gamma": 1.2,
+    "inputKind": "areaSup",
+    "inputValue": 0.5,
+    "outputs": null,
+    "alert": "A/A* must be greater than 1"
+  },
+  {
+    "gamma": 1.2,
+    "inputKind": "machAngleDeg",
+    "inputValue": 20,
+    "outputs": {
+      "mach": "2.92380440",
+      "machAngleDeg": "20",
+      "prandtlMeyerDeg": "61.4650416",
+      "pP0": "0.02455436",
+      "rhoRho0": "0.04554498",
+      "tT0": "0.53912331",
+      "pPStar": "0.04349955",
+      "rhoRhoStar": "0.07335065",
+      "tTStar": "0.59303564",
+      "aAStar": "6.05490461"
+    }
+  },
+  {
+    "gamma": 1.2,
+    "inputKind": "machAngleDeg",
+    "inputValue": 45,
+    "outputs": {
+      "mach": "1.41421356",
+      "machAngleDeg": "45.0000000",
+      "prandtlMeyerDeg": "10.6485027",
+      "pP0": "0.33489797",
+      "rhoRho0": "0.40187757",
+      "tT0": "0.83333333",
+      "pPStar": "0.59329219",
+      "rhoRhoStar": "0.64722784",
+      "tTStar": "0.91666666",
+      "aAStar": "1.14109574"
+    }
+  },
+  {
+    "gamma": 1.2,
+    "inputKind": "machAngleDeg",
+    "inputValue": 80,
+    "outputs": {
+      "mach": "1.01542661",
+      "machAngleDeg": "80.0000000",
+      "prandtlMeyerDeg": "0.09328949",
+      "pP0": "0.55499509",
+      "rhoRho0": "0.61222015",
+      "tT0": "0.90652863",
+      "pPStar": "0.98320767",
+      "rhoRhoStar": "0.98598668",
+      "tTStar": "0.99718149",
+      "aAStar": "1.00021486"
+    }
+  },
+  {
+    "gamma": 1.2,
+    "inputKind": "machAngleDeg",
+    "inputValue": 95,
+    "outputs": null,
+    "alert": "Mach angle must be between 0 and 90"
+  },
+  {
+    "gamma": 1.2,
+    "inputKind": "prandtlMeyerDeg",
+    "inputValue": 10,
+    "outputs": {
+      "mach": "1.39491471",
+      "machAngleDeg": "45.7982824",
+      "prandtlMeyerDeg": "10.0000000",
+      "pP0": "0.34412116",
+      "rhoRho0": "0.41107981",
+      "tT0": "0.83711520",
+      "pPStar": "0.60963164",
+      "rhoRhoStar": "0.66204815",
+      "tTStar": "0.92082672",
+      "aAStar": "1.12842787"
+    }
+  },
+  {
+    "gamma": 1.2,
+    "inputKind": "prandtlMeyerDeg",
+    "inputValue": 40,
+    "outputs": {
+      "mach": "2.24538392",
+      "machAngleDeg": "26.4462545",
+      "prandtlMeyerDeg": "39.9999999",
+      "pP0": "0.08633959",
+      "rhoRho0": "0.12986984",
+      "tT0": "0.66481630",
+      "pPStar": "0.15295585",
+      "rhoRhoStar": "0.20915668",
+      "tTStar": "0.73129793",
+      "aAStar": "2.48994911"
+    }
+  },
+  {
+    "gamma": 1.2,
+    "inputKind": "prandtlMeyerDeg",
+    "inputValue": 80,
+    "outputs": {
+      "mach": "3.62723777",
+      "machAngleDeg": "16.0032498",
+      "prandtlMeyerDeg": "79.9999999",
+      "pP0": "0.00648518",
+      "rhoRho0": "0.01501765",
+      "tT0": "0.43183759",
+      "pPStar": "0.01148890",
+      "rhoRhoStar": "0.02418608",
+      "tTStar": "0.47502135",
+      "aAStar": "16.5387148"
+    }
+  },
+  {
+    "gamma": 1.2,
+    "inputKind": "prandtlMeyerDeg",
+    "inputValue": 200,
+    "outputs": {
+      "mach": "67.3847885",
+      "machAngleDeg": "0.85030886",
+      "prandtlMeyerDeg": "199.999999",
+      "pP0": "1.12596e-016",
+      "rhoRho0": "5.12394e-014",
+      "tT0": "0.00219745",
+      "pPStar": "1.99471e-016",
+      "rhoRhoStar": "8.25216e-014",
+      "tTStar": "0.00241720",
+      "aAStar": "3.65774e+012"
+    }
+  },
+  {
+    "gamma": 1.4,
+    "inputKind": "mach",
+    "inputValue": 0.5,
+    "outputs": {
+      "mach": "0.5",
+      "machAngleDeg": "",
+      "prandtlMeyerDeg": "",
+      "pP0": "0.84301917",
+      "rhoRho0": "0.88517013",
+      "tT0": "0.95238095",
+      "pPStar": "1.59577557",
+      "rhoRhoStar": "1.39630363",
+      "tTStar": "1.14285714",
+      "aAStar": "1.33984375"
+    }
+  },
+  {
+    "gamma": 1.4,
+    "inputKind": "mach",
+    "inputValue": 2,
+    "outputs": {
+      "mach": "2",
+      "machAngleDeg": "29.9999999",
+      "prandtlMeyerDeg": "26.3797608",
+      "pP0": "0.12780452",
+      "rhoRho0": "0.23004814",
+      "tT0": "0.55555555",
+      "pPStar": "0.24192491",
+      "rhoRhoStar": "0.36288736",
+      "tTStar": "0.66666666",
+      "aAStar": "1.68749999"
+    }
+  },
+  {
+    "gamma": 1.4,
+    "inputKind": "mach",
+    "inputValue": 4,
+    "outputs": {
+      "mach": "4",
+      "machAngleDeg": "14.4775121",
+      "prandtlMeyerDeg": "65.7848197",
+      "pP0": "0.00658608",
+      "rhoRho0": "0.02766156",
+      "tT0": "0.23809523",
+      "pPStar": "0.01246699",
+      "rhoRhoStar": "0.04363448",
+      "tTStar": "0.28571428",
+      "aAStar": "10.71875"
+    }
+  },
+  {
+    "gamma": 1.4,
+    "inputKind": "mach",
+    "inputValue": -1,
+    "outputs": null,
+    "alert": "M must be greater than 0"
+  },
+  {
+    "gamma": 1.4,
+    "inputKind": "tT0",
+    "inputValue": 0.9524,
+    "outputs": {
+      "mach": "0.49989499",
+      "machAngleDeg": "",
+      "prandtlMeyerDeg": "",
+      "pP0": "0.84307818",
+      "rhoRho0": "0.88521439",
+      "tT0": "0.9524",
+      "pPStar": "1.59588728",
+      "rhoRhoStar": "1.39637344",
+      "tTStar": "1.14288",
+      "aAStar": "1.34004479"
+    }
+  },
+  {
+    "gamma": 1.4,
+    "inputKind": "tT0",
+    "inputValue": 0.5556,
+    "outputs": {
+      "mach": "1.99982000",
+      "machAngleDeg": "30.0029773",
+      "prandtlMeyerDeg": "26.3747989",
+      "pP0": "0.12784031",
+      "rhoRho0": "0.23009415",
+      "tT0": "0.5556",
+      "pPStar": "0.24199265",
+      "rhoRhoStar": "0.36295995",
+      "tTStar": "0.66672",
+      "aAStar": "1.68724691"
+    }
+  },
+  {
+    "gamma": 1.4,
+    "inputKind": "tT0",
+    "inputValue": 0.2381,
+    "outputs": {
+      "mach": "3.99994750",
+      "machAngleDeg": "14.4777063",
+      "prandtlMeyerDeg": "65.7841263",
+      "pP0": "0.00658654",
+      "rhoRho0": "0.02766294",
+      "tT0": "0.2381",
+      "pPStar": "0.01246786",
+      "rhoRhoStar": "0.04363667",
+      "tTStar": "0.28572",
+      "aAStar": "10.7182475"
+    }
+  },
+  {
+    "gamma": 1.4,
+    "inputKind": "tT0",
+    "inputValue": 1.5,
+    "outputs": null,
+    "alert": "T/T0 must be between 0 and 1"
+  },
+  {
+    "gamma": 1.4,
+    "inputKind": "pP0",
+    "inputValue": 0.843,
+    "outputs": {
+      "mach": "0.50003411",
+      "machAngleDeg": "",
+      "prandtlMeyerDeg": "",
+      "pP0": "0.84300000",
+      "rhoRho0": "0.88515575",
+      "tT0": "0.95237476",
+      "pPStar": "1.59573928",
+      "rhoRhoStar": "1.39628094",
+      "tTStar": "1.14284971",
+      "aAStar": "1.33977845"
+    }
+  },
+  {
+    "gamma": 1.4,
+    "inputKind": "pP0",
+    "inputValue": 0.1278,
+    "outputs": {
+      "mach": "2.00002276",
+      "machAngleDeg": "29.9996235",
+      "prandtlMeyerDeg": "26.3803883",
+      "pP0": "0.12780000",
+      "rhoRho0": "0.23004232",
+      "tT0": "0.55554993",
+      "pPStar": "0.24191634",
+      "rhoRhoStar": "0.36287819",
+      "tTStar": "0.66665992",
+      "aAStar": "1.68753201"
+    }
+  },
+  {
+    "gamma": 1.4,
+    "inputKind": "pP0",
+    "inputValue": 0.006586,
+    "outputs": {
+      "mach": "4.00000994",
+      "machAngleDeg": "14.4774754",
+      "prandtlMeyerDeg": "65.7849511",
+      "pP0": "0.00658600",
+      "rhoRho0": "0.02766130",
+      "tT0": "0.23809433",
+      "pPStar": "0.01246683",
+      "rhoRhoStar": "0.04363407",
+      "tTStar": "0.28571320",
+      "aAStar": "10.7188451"
+    }
+  },
+  {
+    "gamma": 1.4,
+    "inputKind": "pP0",
+    "inputValue": 1.5,
+    "outputs": null,
+    "alert": "p/p0 must be between 0 and 1"
+  },
+  {
+    "gamma": 1.4,
+    "inputKind": "rhoRho0",
+    "inputValue": 0.8852,
+    "outputs": {
+      "mach": "0.49992914",
+      "machAngleDeg": "",
+      "prandtlMeyerDeg": "",
+      "pP0": "0.84305899",
+      "rhoRho0": "0.88520000",
+      "tT0": "0.95239380",
+      "pPStar": "1.59585095",
+      "rhoRhoStar": "1.39635074",
+      "tTStar": "1.14287256",
+      "aAStar": "1.33997939"
+    }
+  },
+  {
+    "gamma": 1.4,
+    "inputKind": "rhoRho0",
+    "inputValue": 0.23,
+    "outputs": {
+      "mach": "2.00018837",
+      "machAngleDeg": "29.9968846",
+      "prandtlMeyerDeg": "26.3849535",
+      "pP0": "0.12776708",
+      "rhoRho0": "0.22999999",
+      "tT0": "0.55550904",
+      "pPStar": "0.24185403",
+      "rhoRhoStar": "0.36281142",
+      "tTStar": "0.66661085",
+      "aAStar": "1.68776493"
+    }
+  },
+  {
+    "gamma": 1.4,
+    "inputKind": "rhoRho0",
+    "inputValue": 0.02766,
+    "outputs": {
+      "mach": "4.00005947",
+      "machAngleDeg": "14.4772922",
+      "prandtlMeyerDeg": "65.7856053",
+      "pP0": "0.00658556",
+      "rhoRho0": "0.02766",
+      "tT0": "0.23808984",
+      "pPStar": "0.01246600",
+      "rhoRhoStar": "0.04363201",
+      "tTStar": "0.28570781",
+      "aAStar": "10.7193191"
+    }
+  },
+  {
+    "gamma": 1.4,
+    "inputKind": "rhoRho0",
+    "inputValue": 1.5,
+    "outputs": null,
+    "alert": "rho/rho0 must be between 0 and 1"
+  },
+  {
+    "gamma": 1.4,
+    "inputKind": "areaSub",
+    "inputValue": 2.964,
+    "outputs": {
+      "mach": "0.19996544",
+      "machAngleDeg": "",
+      "prandtlMeyerDeg": "",
+      "pP0": "0.97250603",
+      "rhoRho0": "0.98028339",
+      "tT0": "0.99206621",
+      "pPStar": "1.84088503",
+      "rhoRhoStar": "1.54633918",
+      "tTStar": "1.19047945",
+      "aAStar": "2.96400770"
+    }
+  },
+  {
+    "gamma": 1.4,
+    "inputKind": "areaSub",
+    "inputValue": 1.34,
+    "outputs": {
+      "mach": "0.49991837",
+      "machAngleDeg": "",
+      "prandtlMeyerDeg": "",
+      "pP0": "0.84306504",
+      "rhoRho0": "0.88520453",
+      "tT0": "0.95239575",
+      "pPStar": "1.59586241",
+      "rhoRhoStar": "1.39635790",
+      "tTStar": "1.14287491",
+      "aAStar": "1.34000002"
+    }
+  },
+  {
+    "gamma": 1.4,
+    "inputKind": "areaSub",
+    "inputValue": 1.009,
+    "outputs": {
+      "mach": "0.89925488",
+      "machAngleDeg": "",
+      "prandtlMeyerDeg": "",
+      "pP0": "0.59173783",
+      "rhoRho0": "0.68744069",
+      "tT0": "0.86078382",
+      "pPStar": "1.12011779",
+      "rhoRhoStar": "1.08439711",
+      "tTStar": "1.03294058",
+      "aAStar": "1.00900000"
+    }
+  },
+  {
+    "gamma": 1.4,
+    "inputKind": "areaSub",
+    "inputValue": 0.5,
+    "outputs": null,
+    "alert": "A/A* must be greater than 1"
+  },
+  {
+    "gamma": 1.4,
+    "inputKind": "areaSup",
+    "inputValue": 1.176,
+    "outputs": {
+      "mach": "1.49975284",
+      "machAngleDeg": "41.8187608",
+      "prandtlMeyerDeg": "11.8979296",
+      "pP0": "0.27250058",
+      "rhoRho0": "0.39508544",
+      "tT0": "0.68972570",
+      "pPStar": "0.51582430",
+      "rhoRhoStar": "0.62322396",
+      "tTStar": "0.82767084",
+      "aAStar": "1.17600002"
+    }
+  },
+  {
+    "gamma": 1.4,
+    "inputKind": "areaSup",
+    "inputValue": 1.688,
+    "outputs": {
+      "mach": "2.00035555",
+      "machAngleDeg": "29.9941203",
+      "prandtlMeyerDeg": "26.3895617",
+      "pP0": "0.12773385",
+      "rhoRho0": "0.22995727",
+      "tT0": "0.55546777",
+      "pPStar": "0.24179114",
+      "rhoRhoStar": "0.36274403",
+      "tTStar": "0.66656132",
+      "aAStar": "1.68800010"
+    }
+  },
+  {
+    "gamma": 1.4,
+    "inputKind": "areaSup",
+    "inputValue": 10.72,
+    "outputs": {
+      "mach": "4.00013060",
+      "machAngleDeg": "14.4770291",
+      "prandtlMeyerDeg": "65.7865448",
+      "pP0": "0.00658494",
+      "rhoRho0": "0.02765812",
+      "tT0": "0.23808339",
+      "pPStar": "0.01246482",
+      "rhoRhoStar": "0.04362906",
+      "tTStar": "0.28570007",
+      "aAStar": "10.7200000"
+    }
+  },
+  {
+    "gamma": 1.4,
+    "inputKind": "areaSup",
+    "inputValue": 0.5,
+    "outputs": null,
+    "alert": "A/A* must be greater than 1"
+  },
+  {
+    "gamma": 1.4,
+    "inputKind": "machAngleDeg",
+    "inputValue": 20,
+    "outputs": {
+      "mach": "2.92380440",
+      "machAngleDeg": "20",
+      "prandtlMeyerDeg": "48.2654699",
+      "pP0": "0.03053239",
+      "rhoRho0": "0.08273444",
+      "tT0": "0.36904094",
+      "pPStar": "0.05779566",
+      "rhoRhoStar": "0.13050870",
+      "tTStar": "0.44284913",
+      "aAStar": "3.93807778"
+    }
+  },
+  {
+    "gamma": 1.4,
+    "inputKind": "machAngleDeg",
+    "inputValue": 45,
+    "outputs": {
+      "mach": "1.41421356",
+      "machAngleDeg": "45.0000000",
+      "prandtlMeyerDeg": "9.39742141",
+      "pP0": "0.30800082",
+      "rhoRho0": "0.43120115",
+      "tT0": "0.71428571",
+      "pPStar": "0.58302373",
+      "rhoRhoStar": "0.68019435",
+      "tTStar": "0.85714285",
+      "aAStar": "1.12285937"
+    }
+  },
+  {
+    "gamma": 1.4,
+    "inputKind": "machAngleDeg",
+    "inputValue": 80,
+    "outputs": {
+      "mach": "1.01542661",
+      "machAngleDeg": "80.0000000",
+      "prandtlMeyerDeg": "0.08539542",
+      "pP0": "0.51881124",
+      "rhoRho0": "0.62579958",
+      "tT0": "0.82903737",
+      "pPStar": "0.98207292",
+      "rhoRhoStar": "0.98716190",
+      "tTStar": "0.99484484",
+      "aAStar": "1.00019665"
+    }
+  },
+  {
+    "gamma": 1.4,
+    "inputKind": "machAngleDeg",
+    "inputValue": 95,
+    "outputs": null,
+    "alert": "Mach angle must be between 0 and 90"
+  },
+  {
+    "gamma": 1.4,
+    "inputKind": "prandtlMeyerDeg",
+    "inputValue": 10,
+    "outputs": {
+      "mach": "1.43497450",
+      "machAngleDeg": "44.1769388",
+      "prandtlMeyerDeg": "10.0000000",
+      "pP0": "0.29906196",
+      "rhoRho0": "0.42222476",
+      "tT0": "0.70830039",
+      "pPStar": "0.56610312",
+      "rhoRhoStar": "0.66603464",
+      "tTStar": "0.84996047",
+      "aAStar": "1.13490531"
+    }
+  },
+  {
+    "gamma": 1.4,
+    "inputKind": "prandtlMeyerDeg",
+    "inputValue": 40,
+    "outputs": {
+      "mach": "2.53781545",
+      "machAngleDeg": "23.2060950",
+      "prandtlMeyerDeg": "40",
+      "pP0": "0.05518696",
+      "rhoRho0": "0.12627338",
+      "tT0": "0.43704355",
+      "pPStar": "0.10446501",
+      "rhoRhoStar": "0.19918880",
+      "tTStar": "0.52445226",
+      "aAStar": "2.73163114"
+    }
+  },
+  {
+    "gamma": 1.4,
+    "inputKind": "prandtlMeyerDeg",
+    "inputValue": 80,
+    "outputs": {
+      "mach": "5.34785573",
+      "machAngleDeg": "10.7772245",
+      "prandtlMeyerDeg": "79.9999999",
+      "pP0": "0.00127123",
+      "rhoRho0": "0.00854261",
+      "tT0": "0.14881146",
+      "pPStar": "0.00240636",
+      "rhoRhoStar": "0.01347547",
+      "tTStar": "0.17857376",
+      "aAStar": "32.8372948"
+    }
+  },
+  {
+    "gamma": 1.4,
+    "inputKind": "prandtlMeyerDeg",
+    "inputValue": 200,
+    "outputs": null,
+    "alert": "Prandtl-Meyer angle must be between 0 and  130.454076"
+  },
+  {
+    "gamma": 1.67,
+    "inputKind": "mach",
+    "inputValue": 0.5,
+    "outputs": {
+      "mach": "0.5",
+      "machAngleDeg": "",
+      "prandtlMeyerDeg": "",
+      "pP0": "0.81834774",
+      "rhoRho0": "0.88688436",
+      "tT0": "0.92272202",
+      "pPStar": "1.68153002",
+      "rhoRhoStar": "1.36506229",
+      "tTStar": "1.23183391",
+      "aAStar": "1.32008363"
+    }
+  },
+  {
+    "gamma": 1.67,
+    "inputKind": "mach",
+    "inputValue": 2,
+    "outputs": {
+      "mach": "2",
+      "machAngleDeg": "29.9999999",
+      "prandtlMeyerDeg": "21.7398721",
+      "pP0": "0.12014776",
+      "rhoRho0": "0.28114577",
+      "tT0": "0.42735042",
+      "pPStar": "0.24687802",
+      "rhoRhoStar": "0.43273002",
+      "tTStar": "0.57051282",
+      "aAStar": "1.52974933"
+    }
+  },
+  {
+    "gamma": 1.67,
+    "inputKind": "mach",
+    "inputValue": 4,
+    "outputs": {
+      "mach": "4",
+      "machAngleDeg": "14.4775121",
+      "prandtlMeyerDeg": "49.7070335",
+      "pP0": "0.00993923",
+      "rhoRho0": "0.06321356",
+      "tT0": "0.15723270",
+      "pPStar": "0.02042301",
+      "rhoRhoStar": "0.09729617",
+      "tTStar": "0.20990566",
+      "aAStar": "5.60831227"
+    }
+  },
+  {
+    "gamma": 1.67,
+    "inputKind": "mach",
+    "inputValue": -1,
+    "outputs": null,
+    "alert": "M must be greater than 0"
+  },
+  {
+    "gamma": 1.67,
+    "inputKind": "tT0",
+    "inputValue": 0.9227,
+    "outputs": {
+      "mach": "0.50007723",
+      "machAngleDeg": "",
+      "prandtlMeyerDeg": "",
+      "pP0": "0.81829904",
+      "rhoRho0": "0.88685276",
+      "tT0": "0.9227",
+      "pPStar": "1.68142995",
+      "rhoRhoStar": "1.36501365",
+      "tTStar": "1.2318045",
+      "aAStar": "1.31994255"
+    }
+  },
+  {
+    "gamma": 1.67,
+    "inputKind": "tT0",
+    "inputValue": 0.4274,
+    "outputs": {
+      "mach": "1.99979744",
+      "machAngleDeg": "30.0033506",
+      "prandtlMeyerDeg": "21.7355768",
+      "pP0": "0.12018250",
+      "rhoRho0": "0.28119444",
+      "tT0": "0.42740000",
+      "pPStar": "0.24694941",
+      "rhoRhoStar": "0.43280494",
+      "tTStar": "0.57057900",
+      "aAStar": "1.52955072"
+    }
+  },
+  {
+    "gamma": 1.67,
+    "inputKind": "tT0",
+    "inputValue": 0.1572,
+    "outputs": {
+      "mach": "4.00049368",
+      "machAngleDeg": "14.4756865",
+      "prandtlMeyerDeg": "49.7113394",
+      "pP0": "0.00993408",
+      "rhoRho0": "0.06319394",
+      "tT0": "0.1572",
+      "pPStar": "0.02041243",
+      "rhoRhoStar": "0.09726596",
+      "tTStar": "0.209862",
+      "aAStar": "5.60994496"
+    }
+  },
+  {
+    "gamma": 1.67,
+    "inputKind": "tT0",
+    "inputValue": 1.5,
+    "outputs": null,
+    "alert": "T/T0 must be between 0 and 1"
+  },
+  {
+    "gamma": 1.67,
+    "inputKind": "pP0",
+    "inputValue": 0.8183,
+    "outputs": {
+      "mach": "0.50007571",
+      "machAngleDeg": "",
+      "prandtlMeyerDeg": "",
+      "pP0": "0.81830000",
+      "rhoRho0": "0.88685338",
+      "tT0": "0.92270043",
+      "pPStar": "1.68143192",
+      "rhoRhoStar": "1.36501460",
+      "tTStar": "1.23180507",
+      "aAStar": "1.31994531"
+    }
+  },
+  {
+    "gamma": 1.67,
+    "inputKind": "pP0",
+    "inputValue": 0.1201,
+    "outputs": {
+      "mach": "2.00027858",
+      "machAngleDeg": "29.9953929",
+      "prandtlMeyerDeg": "21.7457792",
+      "pP0": "0.12009999",
+      "rhoRho0": "0.28107883",
+      "tT0": "0.42728225",
+      "pPStar": "0.24677987",
+      "rhoRhoStar": "0.43262699",
+      "tTStar": "0.57042181",
+      "aAStar": "1.53002255"
+    }
+  },
+  {
+    "gamma": 1.67,
+    "inputKind": "pP0",
+    "inputValue": 0.009939,
+    "outputs": {
+      "mach": "4.00002295",
+      "machAngleDeg": "14.4774273",
+      "prandtlMeyerDeg": "49.7072337",
+      "pP0": "0.00993899",
+      "rhoRho0": "0.06321265",
+      "tT0": "0.15723118",
+      "pPStar": "0.02042252",
+      "rhoRhoStar": "0.09729476",
+      "tTStar": "0.20990363",
+      "aAStar": "5.60838816"
+    }
+  },
+  {
+    "gamma": 1.67,
+    "inputKind": "pP0",
+    "inputValue": 1.5,
+    "outputs": null,
+    "alert": "p/p0 must be between 0 and 1"
+  },
+  {
+    "gamma": 1.67,
+    "inputKind": "rhoRho0",
+    "inputValue": 0.8869,
+    "outputs": {
+      "mach": "0.49996179",
+      "machAngleDeg": "",
+      "prandtlMeyerDeg": "",
+      "pP0": "0.81837183",
+      "rhoRho0": "0.8869",
+      "tT0": "0.92273292",
+      "pPStar": "1.68157952",
+      "rhoRhoStar": "1.36508635",
+      "tTStar": "1.23184845",
+      "aAStar": "1.32015345"
+    }
+  },
+  {
+    "gamma": 1.67,
+    "inputKind": "rhoRho0",
+    "inputValue": 0.2811,
+    "outputs": {
+      "mach": "2.00019049",
+      "machAngleDeg": "29.9968495",
+      "prandtlMeyerDeg": "21.7439114",
+      "pP0": "0.12011510",
+      "rhoRho0": "0.28109999",
+      "tT0": "0.42730381",
+      "pPStar": "0.24681090",
+      "rhoRhoStar": "0.43265957",
+      "tTStar": "0.57045058",
+      "aAStar": "1.52993615"
+    }
+  },
+  {
+    "gamma": 1.67,
+    "inputKind": "rhoRho0",
+    "inputValue": 0.06321,
+    "outputs": {
+      "mach": "4.00008964",
+      "machAngleDeg": "14.4771806",
+      "prandtlMeyerDeg": "49.7078154",
+      "pP0": "0.00993830",
+      "rhoRho0": "0.06320999",
+      "tT0": "0.15722676",
+      "pPStar": "0.02042109",
+      "rhoRhoStar": "0.09729068",
+      "tTStar": "0.20989773",
+      "aAStar": "5.60860870"
+    }
+  },
+  {
+    "gamma": 1.67,
+    "inputKind": "rhoRho0",
+    "inputValue": 1.5,
+    "outputs": null,
+    "alert": "rho/rho0 must be between 0 and 1"
+  },
+  {
+    "gamma": 1.67,
+    "inputKind": "areaSub",
+    "inputValue": 2.887,
+    "outputs": {
+      "mach": "0.20000710",
+      "machAngleDeg": "",
+      "prandtlMeyerDeg": "",
+      "pP0": "0.96736389",
+      "rhoRho0": "0.98032749",
+      "tT0": "0.98677625",
+      "pPStar": "1.98772642",
+      "rhoRhoStar": "1.50888677",
+      "tTStar": "1.31734630",
+      "aAStar": "2.88700772"
+    }
+  },
+  {
+    "gamma": 1.67,
+    "inputKind": "areaSub",
+    "inputValue": 1.32,
+    "outputs": {
+      "mach": "0.50004576",
+      "machAngleDeg": "",
+      "prandtlMeyerDeg": "",
+      "pP0": "0.81831888",
+      "rhoRho0": "0.88686564",
+      "tT0": "0.92270897",
+      "pPStar": "1.68147073",
+      "rhoRhoStar": "1.36503347",
+      "tTStar": "1.23181648",
+      "aAStar": "1.32000003"
+    }
+  },
+  {
+    "gamma": 1.67,
+    "inputKind": "areaSub",
+    "inputValue": 1.008,
+    "outputs": {
+      "mach": "0.90031965",
+      "machAngleDeg": "",
+      "prandtlMeyerDeg": "",
+      "pP0": "0.54947905",
+      "rhoRho0": "0.69868613",
+      "tT0": "0.78644620",
+      "pPStar": "1.12906223",
+      "rhoRhoStar": "1.07539396",
+      "tTStar": "1.04990568",
+      "aAStar": "1.00800000"
+    }
+  },
+  {
+    "gamma": 1.67,
+    "inputKind": "areaSub",
+    "inputValue": 0.5,
+    "outputs": null,
+    "alert": "A/A* must be greater than 1"
+  },
+  {
+    "gamma": 1.67,
+    "inputKind": "areaSup",
+    "inputValue": 1.148,
+    "outputs": {
+      "mach": "1.49973120",
+      "machAngleDeg": "41.8195006",
+      "prandtlMeyerDeg": "10.1976561",
+      "pP0": "0.24664265",
+      "rhoRho0": "0.43248293",
+      "tT0": "0.57029453",
+      "pPStar": "0.50679803",
+      "rhoRhoStar": "0.66566304",
+      "tTStar": "0.76134320",
+      "aAStar": "1.14800000"
+    }
+  },
+  {
+    "gamma": 1.67,
+    "inputKind": "areaSup",
+    "inputValue": 1.53,
+    "outputs": {
+      "mach": "2.00025562",
+      "machAngleDeg": "29.9957726",
+      "prandtlMeyerDeg": "21.7452923",
+      "pP0": "0.12010393",
+      "rhoRho0": "0.28108435",
+      "tT0": "0.42728787",
+      "pPStar": "0.24678796",
+      "rhoRhoStar": "0.43263549",
+      "tTStar": "0.57042931",
+      "aAStar": "1.53000002"
+    }
+  },
+  {
+    "gamma": 1.67,
+    "inputKind": "areaSup",
+    "inputValue": 5.608,
+    "outputs": {
+      "mach": "3.99990594",
+      "machAngleDeg": "14.4778600",
+      "prandtlMeyerDeg": "49.7062131",
+      "pP0": "0.00994022",
+      "rhoRho0": "0.06321730",
+      "tT0": "0.15723893",
+      "pPStar": "0.02042503",
+      "rhoRhoStar": "0.09730192",
+      "tTStar": "0.20991398",
+      "aAStar": "5.60800125"
+    }
+  },
+  {
+    "gamma": 1.67,
+    "inputKind": "areaSup",
+    "inputValue": 0.5,
+    "outputs": null,
+    "alert": "A/A* must be greater than 1"
+  },
+  {
+    "gamma": 1.67,
+    "inputKind": "machAngleDeg",
+    "inputValue": 20,
+    "outputs": {
+      "mach": "2.92380440",
+      "machAngleDeg": "20",
+      "prandtlMeyerDeg": "37.7954315",
+      "pP0": "0.03442281",
+      "rhoRho0": "0.13300259",
+      "tT0": "0.25881311",
+      "pPStar": "0.07073154",
+      "rhoRhoStar": "0.20471308",
+      "tTStar": "0.34551551",
+      "aAStar": "2.84231566"
+    }
+  },
+  {
+    "gamma": 1.67,
+    "inputKind": "machAngleDeg",
+    "inputValue": 45,
+    "outputs": {
+      "mach": "1.41421356",
+      "machAngleDeg": "45.0000000",
+      "prandtlMeyerDeg": "8.11645036",
+      "pP0": "0.27852929",
+      "rhoRho0": "0.46514392",
+      "tT0": "0.59880239",
+      "pPStar": "0.57231828",
+      "rhoRhoStar": "0.71593373",
+      "tTStar": "0.79940119",
+      "aAStar": "1.10466292"
+    }
+  },
+  {
+    "gamma": 1.67,
+    "inputKind": "machAngleDeg",
+    "inputValue": 80,
+    "outputs": {
+      "mach": "1.01542661",
+      "machAngleDeg": "80.0000000",
+      "prandtlMeyerDeg": "0.07664041",
+      "pP0": "0.47733195",
+      "rhoRho0": "0.64220983",
+      "tT0": "0.74326478",
+      "pPStar": "0.98081532",
+      "rhoRhoStar": "0.98846755",
+      "tTStar": "0.99225848",
+      "aAStar": "1.00017645"
+    }
+  },
+  {
+    "gamma": 1.67,
+    "inputKind": "machAngleDeg",
+    "inputValue": 95,
+    "outputs": null,
+    "alert": "Mach angle must be between 0 and 90"
+  },
+  {
+    "gamma": 1.67,
+    "inputKind": "prandtlMeyerDeg",
+    "inputValue": 10,
+    "outputs": {
+      "mach": "1.49161550",
+      "machAngleDeg": "42.0990299",
+      "prandtlMeyerDeg": "10.0000000",
+      "pP0": "0.24951723",
+      "rhoRho0": "0.43549418",
+      "tT0": "0.57295192",
+      "pPStar": "0.51270468",
+      "rhoRhoStar": "0.67029786",
+      "tTStar": "0.76489082",
+      "aAStar": "1.14360370"
+    }
+  },
+  {
+    "gamma": 1.67,
+    "inputKind": "prandtlMeyerDeg",
+    "inputValue": 40,
+    "outputs": {
+      "mach": "3.08806116",
+      "machAngleDeg": "18.8945716",
+      "prandtlMeyerDeg": "40",
+      "pP0": "0.02804919",
+      "rhoRho0": "0.11765516",
+      "tT0": "0.23840170",
+      "pPStar": "0.05763510",
+      "rhoRhoStar": "0.18109083",
+      "tTStar": "0.31826628",
+      "aAStar": "3.16973041"
+    }
+  },
+  {
+    "gamma": 1.67,
+    "inputKind": "prandtlMeyerDeg",
+    "inputValue": 80,
+    "outputs": {
+      "mach": "17.6323568",
+      "machAngleDeg": "3.25121249",
+      "prandtlMeyerDeg": "80.0000000",
+      "pP0": "9.13165e-006",
+      "rhoRho0": "0.00096020",
+      "tT0": "0.00951008",
+      "pPStar": "0.00001876",
+      "rhoRhoStar": "0.00147791",
+      "tTStar": "0.01269596",
+      "aAStar": "340.569947"
+    }
+  },
+  {
+    "gamma": 1.67,
+    "inputKind": "prandtlMeyerDeg",
+    "inputValue": 200,
+    "outputs": null,
+    "alert": "Prandtl-Meyer angle must be between 0 and  89.6638652"
+  }
+]
