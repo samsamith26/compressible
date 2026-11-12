@@ -1,0 +1,8 @@
+node_modules/
+dist/
+coverage/
+.vite/
+*.local
+.playwright-mcp/
+# Third-party reference pages (VT calculator); only derived fixtures are committed
+reference/
