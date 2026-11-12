@@ -1,4 +1,4 @@
-import { maxDeflection, thetaFromBetaDeg } from '@/physics'
+import { machAngleDeg, maxDeflection, thetaFromBetaDeg } from '@/physics'
 
 export interface ThetaBeta {
   readonly thetaDeg: number
@@ -7,8 +7,6 @@ export interface ThetaBeta {
 
 /** The Mach numbers drawn as the background family on the θ-β-M chart. */
 export const MACH_FAMILY: readonly number[] = [1.2, 1.5, 2, 3, 5, 10]
-
-const machAngleDeg = (m1: number): number => (Math.asin(1 / m1) * 180) / Math.PI
 
 /** θ(β) for one upstream Mach number, β from the Mach angle μ to 90°. */
 export function machCurve(m1: number, gamma: number, samples = 200): ThetaBeta[] {

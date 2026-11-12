@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatValue, toQueryNumber } from '../format'
+import { formatValue, shortestText, toQueryNumber } from '../format'
 
 describe('formatValue', () => {
   it.each([
@@ -39,5 +39,23 @@ describe('toQueryNumber', () => {
     expect(toQueryNumber(39.31393184312)).toBe('39.31393184')
     expect(toQueryNumber(1e-7)).toBe('1e-7')
     expect(toQueryNumber(2.13719, 4)).toBe('2.137')
+  })
+})
+
+describe('formatValue rounding edge', () => {
+  it('switches to ×10ⁿ when rounding carries into the next decade', () => {
+    expect(formatValue(99999.7)).toBe('1.0000×10⁵')
+    expect(formatValue(0.000099999)).toBe('9.9999×10⁻⁵')
+    expect(formatValue(0.000099999999)).toBe('0.00010000')
+  })
+})
+
+describe('shortestText', () => {
+  it('returns the shortest rounding the check accepts', () => {
+    expect(shortestText(41.810314896, () => true)).toBe('41.81')
+    expect(shortestText(41.810314896, (x) => x >= 41.8103)).toBe('41.8103')
+  })
+  it('falls back to full precision when no rounding is accepted', () => {
+    expect(shortestText(1 / 3, () => false)).toBe(String(1 / 3))
   })
 })

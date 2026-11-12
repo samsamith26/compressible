@@ -7,7 +7,10 @@ import { fieldError, type FieldError } from '@/lib/fields'
 import { toQueryNumber } from '@/lib/format'
 import { expectOk } from '@/lib/invariant'
 import { readEnum } from '@/lib/query'
-import { ISENTROPIC_KINDS, inputFromMach, isentropicValue, solveIsentropicText } from './model'
+import {
+  ISENTROPIC_KINDS,
+  dragInputText,
+  inputFromMach, isentropicValue, solveIsentropicText } from './model'
 
 const KEY_KIND = 'iso.k'
 const KEY_VALUE = 'iso.v'
@@ -51,7 +54,7 @@ export function useIsentropicSolver(): IsentropicSolver {
     setValueText: (text) => update({ [KEY_VALUE]: text }),
     setMach: (mach) => {
       const next = inputFromMach(kind, mach, gamma.value)
-      update({ [KEY_KIND]: next.kind, [KEY_VALUE]: toQueryNumber(next.value, 4) })
+      update({ [KEY_KIND]: next.kind, [KEY_VALUE]: dragInputText(next, gamma.text, mach) })
     },
   }
 }

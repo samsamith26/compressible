@@ -6,9 +6,11 @@ import { useSearchParams } from '@/hooks/useSearchParams'
 import { fieldError, type FieldError, type FieldResult } from '@/lib/fields'
 import { toQueryNumber } from '@/lib/format'
 import { expectOk } from '@/lib/invariant'
+import { parseNumber } from '@/lib/parseNumber'
 import { readEnum } from '@/lib/query'
 import {
   OBLIQUE_KINDS,
+  dragInputText,
   inputFromBeta,
   obliqueValue,
   solveObliqueText,
@@ -19,14 +21,17 @@ const KEY_M1 = 'ob.m'
 const KEY_KIND = 'ob.k'
 const KEY_VALUE = 'ob.v'
 
+/** The inputs that produced the last valid solution, parsed exactly as the solver parsed them. */
 interface Snapshot {
   readonly solution: ObliqueSolution
+  readonly m1: number
   readonly theta: number
   readonly kind: ObliqueInputKind
 }
 
 const DEFAULT_SNAPSHOT: Snapshot = {
   solution: expectOk(solveOblique(2, { kind: 'thetaWeak', value: 10 }, 1.4)),
+  m1: 2,
   theta: 10,
   kind: 'thetaWeak',
 }
@@ -63,12 +68,23 @@ export function useObliqueSolver(): ObliqueSolver {
   // Remember the input alongside the solution: a detached result is drawn at the θ that was typed.
   const snapshot = useMemo(
     (): FieldResult<Snapshot, ObliqueField> =>
-      result.ok ? { ok: true, value: { solution: result.value, theta: Number(valueText), kind } } : result,
-    [result, valueText, kind],
+      result.ok
+        ? {
+            ok: true,
+            value: {
+              solution: result.value,
+              // Both parse: the solve above succeeded with these same texts.
+              m1: parseNumber(m1Text) ?? Number.NaN,
+              theta: parseNumber(valueText) ?? Number.NaN,
+              kind,
+            },
+          }
+        : result,
+    [result, m1Text, valueText, kind],
   )
   const last = useLastOk(snapshot, DEFAULT_SNAPSHOT)
   const { solution } = last
-  const m1 = solution.kind === 'attached' ? solution.state.m1 : Number(m1Text)
+  const { m1 } = last
   const isThetaInput = last.kind === 'thetaWeak' || last.kind === 'thetaStrong'
 
   return {
@@ -93,7 +109,7 @@ export function useObliqueSolver(): ObliqueSolver {
     setValueText: (text) => update({ [KEY_VALUE]: text }),
     setBeta: (betaDeg) => {
       const next = inputFromBeta(kind, m1, betaDeg, solution.max.betaDeg, gamma.value)
-      update({ [KEY_KIND]: next.kind, [KEY_VALUE]: toQueryNumber(next.value, 4) })
+      update({ [KEY_KIND]: next.kind, [KEY_VALUE]: dragInputText(next, toQueryNumber(m1), gamma.text, betaDeg) })
     },
   }
 }

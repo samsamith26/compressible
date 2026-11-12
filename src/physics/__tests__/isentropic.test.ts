@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  machAngleDeg,
   areaRatio,
   isentropicFromMach,
   machFromAreaRatio,
@@ -192,5 +193,12 @@ describe('review focus', () => {
     expectError(atMax, 'OUT_OF_RANGE')
     expectBounds(atMax, [0, maxPrandtlMeyerDeg(1.4)])
     expectError(machFromPrandtlMeyer(131, 1.4), 'OUT_OF_RANGE')
+  })
+})
+
+describe('machAngleDeg (raw)', () => {
+  it('is 90° at M = 1 and 30° at M = 2', () => {
+    expect(machAngleDeg(1)).toBe(90)
+    expect(machAngleDeg(2)).toBeCloseTo(30, 12)
   })
 })

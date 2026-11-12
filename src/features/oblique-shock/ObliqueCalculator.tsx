@@ -9,12 +9,18 @@ import { usePointerDrag } from '@/hooks/usePointerDrag'
 import { messageFor } from '@/lib/fields'
 import { formatValue } from '@/lib/format'
 import { DetachedNotice } from './DetachedNotice'
-import { M1_QUANTITY, OBLIQUE_INPUTS, OBLIQUE_KINDS, OBLIQUE_OUTPUTS } from './model'
+import type { ObliqueInputKind } from '@/physics'
+import { M1_QUANTITY, OBLIQUE_INPUTS, OBLIQUE_KINDS, OBLIQUE_OUTPUTS, type ObliqueOutputKey } from './model'
 import { ThetaBetaChart } from './ThetaBetaChart'
 import { useObliqueSolver } from './useObliqueSolver'
 import { WedgeDiagram } from './WedgeDiagram'
 
-const INPUT_OUTPUT = { thetaWeak: 'thetaDeg', thetaStrong: 'thetaDeg', beta: 'betaDeg', m1n: 'm1n' } as const
+const INPUT_OUTPUT: Readonly<Record<ObliqueInputKind, ObliqueOutputKey>> = {
+  thetaWeak: 'thetaDeg',
+  thetaStrong: 'thetaDeg',
+  beta: 'betaDeg',
+  m1n: 'm1n',
+}
 
 export function ObliqueCalculator() {
   const s = useObliqueSolver()

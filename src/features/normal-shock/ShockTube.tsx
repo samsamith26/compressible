@@ -9,6 +9,7 @@ const DUCT_TOP = 34
 const DUCT_BOTTOM = 134
 const ROWS = 5
 const UPSTREAM_SPACING = 26
+const MIN_SPACING = 3
 
 interface ShockTubeProps {
   readonly state: NormalShockState
@@ -44,7 +45,8 @@ export function ShockTube({ state, stale }: ShockTubeProps) {
   const clipDown = useId()
   const [ref, width] = useElementWidth<HTMLDivElement>()
   const shockX = Math.round(width * 0.46)
-  const downSpacing = UPSTREAM_SPACING / state.rho2Rho1
+  // Floor the spacing: as γ → 1, ρ₂/ρ₁ is unbounded and would mean thousands of circles.
+  const downSpacing = Math.max(MIN_SPACING, UPSTREAM_SPACING / state.rho2Rho1)
   // Leave room after each arrow for its Mach label.
   const arrowUp = Math.min(shockX * 0.4, 90)
   const arrowDown = arrowUp / state.rho2Rho1

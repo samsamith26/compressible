@@ -51,6 +51,11 @@ function lnAreaRatio(mach: number, gamma: number): number {
   )
 }
 
+/** Mach angle μ = asin(1/M) in degrees for M ≥ 1. Raw: inputs are not validated. */
+export function machAngleDeg(mach: number): number {
+  return radToDeg(Math.asin(1 / mach))
+}
+
 /** A/A*(M). Raw: inputs are not validated. */
 export function areaRatio(mach: number, gamma: number): number {
   return Math.exp(lnAreaRatio(mach, gamma))
@@ -82,7 +87,7 @@ export function isentropicFromMach(mach: number, gamma: number): Result<Isentrop
 
   return ok({
     mach,
-    machAngleDeg: supersonic ? radToDeg(Math.asin(1 / mach)) : null,
+    machAngleDeg: supersonic ? machAngleDeg(mach) : null,
     prandtlMeyerDeg: supersonic ? prandtlMeyerDeg(mach, gamma) : null,
     pP0,
     rhoRho0,
@@ -176,7 +181,7 @@ export function machFromAreaRatio(
 /** M = 1/sin μ. Independent of γ. */
 export function machFromMachAngle(muDeg: number): Result<number> {
   const r = requireInRange('Mach angle', muDeg, {
-    lo: radToDeg(Math.asin(1 / MACH_MAX)),
+    lo: machAngleDeg(MACH_MAX),
     hi: 90,
     loInclusive: true,
     hiInclusive: true,

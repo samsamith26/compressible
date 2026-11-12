@@ -34,7 +34,8 @@ export function wedgeGeometry(input: WedgeInput): WedgeGeometry {
   const { width: W, height: H, thetaDeg, betaDeg, m1 } = input
   const n = input.streamlines ?? 7
   const apex = { x: W * 0.36, y: H * 0.8 }
-  const tanT = Math.tan(rad(thetaDeg))
+  // A detached input can be any θ; keep the drawn ramp a ramp.
+  const tanT = Math.tan(rad(Math.min(80, Math.max(0, thetaDeg))))
   const rampY = (x: number): number => apex.y - (x - apex.x) * tanT
   const surfacePath = `M0,${f(apex.y)} L${f(apex.x)},${f(apex.y)} L${f(W)},${f(rampY(W))}`
   const bodyPath = `${surfacePath} L${f(W)},${f(H)} L0,${f(H)} Z`

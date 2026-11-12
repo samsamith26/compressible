@@ -97,7 +97,7 @@ export function RatioChart({ state, gamma, onMach, stale }: RatioChartProps) {
             {CURVE_KEYS.map((k) => (
               <path
                 key={k}
-                d={path(curves.values[k].map((v, i) => [x(curves.machs[i] ?? 0), y(v)] as const)) ?? ''}
+                d={path(curves.values[k].map((v, i): readonly [number, number] => [x(curves.machs[i] ?? 0), y(v)])) ?? ''}
                 className={cn(CURVES[k].className, 'fill-none!')}
                 strokeWidth={k === 'aAStar' ? 2 : 1.6}
               />

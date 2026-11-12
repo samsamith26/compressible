@@ -19,3 +19,14 @@ describe('parseNumber', () => {
     expect(parseNumber(text)).toBeNull()
   })
 })
+
+describe('parseNumber separators', () => {
+  it('normalises every Unicode minus', () => {
+    expect(parseNumber('−1e−3')).toBe(-1e-3)
+  })
+  it('rejects thousands separators instead of misreading them', () => {
+    expect(parseNumber('1,000')).toBeNull()
+    expect(parseNumber('12,345,678')).toBeNull()
+    expect(parseNumber('1,25')).toBe(1.25)
+  })
+})

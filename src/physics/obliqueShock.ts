@@ -4,6 +4,7 @@
  */
 
 import { MACH_MAX, requireInRange, validateGamma } from './gas'
+import { machAngleDeg } from './isentropic'
 import { normalShockRaw } from './normalShock'
 import { degToRad, findRoot, radToDeg } from './numeric'
 import { ok, type Result } from './result'
@@ -40,10 +41,6 @@ export type ObliqueFromTheta =
 const SUPERSONIC = { lo: 1, hi: MACH_MAX, loInclusive: false, hiInclusive: true }
 /** θ within this many degrees of θmax is treated as exactly θmax. */
 const THETA_MAX_TOL = 1e-12
-
-function machAngleDeg(m1: number): number {
-  return radToDeg(Math.asin(1 / m1))
-}
 
 /**
  * θ-β-M relation: tan θ = 2 cot β (M1² sin²β − 1) / (M1²(γ + cos 2β) + 2).

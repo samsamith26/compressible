@@ -14,6 +14,7 @@ import { join } from 'node:path'
 import { chromium, type Page } from 'playwright'
 import {
   isentropicFromMach,
+  machAngleDeg,
   maxDeflection,
   normalShock,
   obliqueFromTheta,
@@ -162,7 +163,7 @@ function normalCases(gamma: number): Case[] {
 function obliqueCases(gamma: number): Case[] {
   return [1.5, 2, 5].flatMap((m1) => {
     const max = must(maxDeflection(m1, gamma))
-    const mu = (Math.asin(1 / m1) * 180) / Math.PI
+    const mu = machAngleDeg(m1)
     const mid = must(obliqueFromTheta(m1, max.thetaMaxDeg * 0.5, gamma))
     if (mid.kind !== 'attached') throw new Error('expected attached')
     const valid: Record<(typeof OBLIQUE_KINDS)[number], number[]> = {

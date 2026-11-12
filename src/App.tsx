@@ -1,3 +1,4 @@
+import type { ReactElement } from 'react'
 import { Footer } from '@/components/layout/Footer'
 import { ThemeToggle } from '@/components/layout/ThemeToggle'
 import { Wordmark } from '@/components/layout/Wordmark'
@@ -5,13 +6,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { IsentropicCalculator } from '@/features/isentropic/IsentropicCalculator'
 import { NormalShockCalculator } from '@/features/normal-shock/NormalShockCalculator'
 import { ObliqueCalculator } from '@/features/oblique-shock/ObliqueCalculator'
-import { useCalculatorTab, CALCULATORS } from '@/hooks/useCalculatorTab'
+import { CALCULATORS, useCalculatorTab, type CalculatorId } from '@/hooks/useCalculatorTab'
 
-const VIEWS = {
+const VIEWS: Readonly<Record<CalculatorId, () => ReactElement>> = {
   isentropic: IsentropicCalculator,
   normal: NormalShockCalculator,
   oblique: ObliqueCalculator,
-} as const
+}
 
 export function App() {
   const [tab, setTab] = useCalculatorTab()

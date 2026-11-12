@@ -7,6 +7,7 @@ import {
   type ObliqueSolution,
 } from '@/physics'
 import { attribute, parseField, type FieldResult, type Quantity } from '@/lib/fields'
+import { shortestText } from '@/lib/format'
 
 export const OBLIQUE_KINDS: readonly ObliqueInputKind[] = ['thetaWeak', 'thetaStrong', 'beta', 'm1n']
 
@@ -91,4 +92,23 @@ export function inputFromBeta(
         value: thetaFromBetaDeg(m1, betaDeg, gamma),
       }
   }
+}
+
+/** Tolerance on β when choosing how many digits a dragged input needs. */
+const BETA_TOL_DEG = 0.02
+
+/**
+ * Text for a dragged input: as short as possible while it still solves to an attached shock
+ * within 0.02° of the dragged β (plain rounding can fall below μ or past θmax).
+ */
+export function dragInputText(
+  input: { readonly kind: ObliqueInputKind; readonly value: number },
+  m1Text: string,
+  gammaText: string,
+  targetBetaDeg: number,
+): string {
+  return shortestText(input.value, (rounded) => {
+    const r = solveObliqueText({ m1: m1Text, gamma: gammaText, kind: input.kind, value: String(rounded) })
+    return r.ok && r.value.kind === 'attached' && Math.abs(r.value.state.betaDeg - targetBetaDeg) < BETA_TOL_DEG
+  })
 }

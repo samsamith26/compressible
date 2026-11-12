@@ -5,6 +5,7 @@ import {
   type IsentropicState,
 } from '@/physics'
 import { attribute, parseField, type FieldResult, type Quantity } from '@/lib/fields'
+import { shortestText } from '@/lib/format'
 
 export const ISENTROPIC_KINDS: readonly IsentropicInputKind[] = [
   'mach',
@@ -95,4 +96,19 @@ export function inputFromMach(
     kind === 'areaSub' || kind === 'areaSup' ? (mach < 1 ? 'areaSub' : 'areaSup') : kind
   const value = isentropicValue(state.value, resolved)
   return value === null ? fallback : { kind: resolved, value }
+}
+
+/**
+ * Text for a dragged input: as short as possible while it still solves to within 0.1% of the
+ * dragged Mach number (ratios near 1, like T/T₀ at low M, need more digits).
+ */
+export function dragInputText(
+  input: { readonly kind: IsentropicInputKind; readonly value: number },
+  gammaText: string,
+  targetMach: number,
+): string {
+  return shortestText(input.value, (rounded) => {
+    const r = solveIsentropicText(input.kind, String(rounded), gammaText)
+    return r.ok && Math.abs(r.value.mach - targetMach) <= 1e-3 * targetMach
+  })
 }

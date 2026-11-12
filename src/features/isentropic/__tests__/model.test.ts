@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { isentropicFromMach } from '@/physics'
 import {
   ISENTROPIC_KINDS,
+  dragInputText,
   inputFromMach,
   isentropicValue,
   solveIsentropicText,
@@ -70,5 +71,18 @@ describe('error attribution', () => {
     expect(!g.ok && g.field).toBe('gamma')
     const v = solveIsentropicText('mach', '-1', '1.4')
     expect(!v.ok && v.field).toBe('value')
+  })
+})
+
+describe('dragInputText', () => {
+  it('keeps enough digits that the ratio still solves to the dragged Mach number', () => {
+    // T/T0 at M = 0.02 is 0.99992; 4 significant figures (0.9999) would give M ≈ 0.022.
+    const next = inputFromMach('tT0', 0.02, gamma)
+    const text = dragInputText(next, '1.4', 0.02)
+    const r = solveIsentropicText('tT0', text, '1.4')
+    expect(r.ok && r.value.mach).toBeCloseTo(0.02, 4)
+  })
+  it('uses short text when it is accurate', () => {
+    expect(dragInputText({ kind: 'mach', value: 2.13719 }, '1.4', 2.13719)).toBe('2.137')
   })
 })

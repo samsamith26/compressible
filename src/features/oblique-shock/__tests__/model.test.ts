@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest'
 import { maxDeflection } from '@/physics'
-import { OBLIQUE_KINDS, inputFromBeta, obliqueValue, solveObliqueText } from '../model'
+import {
+  OBLIQUE_KINDS,
+  dragInputText,
+  inputFromBeta,
+  obliqueValue,
+  solveObliqueText,
+} from '../model'
+import { parseNumber as parsedNumber } from '@/lib/parseNumber'
 
 const base = { m1: '2', gamma: '1.4' }
 
@@ -73,5 +80,33 @@ describe('error attribution', () => {
       const r = solveObliqueText(input)
       expect(!r.ok && r.field).toBe(field)
     }
+  })
+})
+
+describe('dragInputText', () => {
+  it('never rounds β below the Mach angle', () => {
+    // μ at M1 = 1.5 is 41.8103149°; 4 significant figures (41.81) would be below it.
+    const mu = (Math.asin(1 / 1.5) * 180) / Math.PI
+    const text = dragInputText({ kind: 'beta', value: mu }, '1.5', '1.4', mu)
+    expect(Number(text)).toBeGreaterThanOrEqual(mu * (1 - 1e-12))
+    expect(solveObliqueText({ m1: '1.5', gamma: '1.4', kind: 'beta', value: text }).ok).toBe(true)
+  })
+  it('never rounds θ past θmax into detachment', () => {
+    const max = maxDeflection(3, 1.4)
+    if (!max.ok) throw new Error('setup')
+    const next = inputFromBeta('thetaWeak', 3, max.value.betaDeg, max.value.betaDeg, 1.4)
+    const text = dragInputText(next, '3', '1.4', max.value.betaDeg)
+    const r = solveObliqueText({ m1: '3', gamma: '1.4', kind: next.kind, value: text })
+    expect(r.ok && r.value.kind).toBe('attached')
+  })
+  it('keeps short text where it is accurate enough', () => {
+    expect(dragInputText({ kind: 'beta', value: 45.123456 }, '2', '1.4', 45.123456)).toBe('45.12')
+  })
+})
+
+describe('parsedSnapshot', () => {
+  it('reads M1 and θ with the same parser as the solver', () => {
+    expect(parsedNumber('25,5')).toBe(25.5)
+    expect(parsedNumber('abc')).toBeNull()
   })
 })

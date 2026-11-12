@@ -54,3 +54,12 @@ describe('wedgeGeometry region 2', () => {
     expect(wedgeGeometry({ width: 400, height: 200, thetaDeg: 30, betaDeg: null, m1: 2 }).region2Path).toBeNull()
   })
 })
+
+describe('wedgeGeometry clamps the ramp', () => {
+  it('never draws a ramp at or beyond 90°', () => {
+    const g = wedgeGeometry({ width: 400, height: 200, thetaDeg: 120, betaDeg: null, m1: 2 })
+    const nums = (g.surfacePath.match(/-?\d+(\.\d+)?/g) ?? []).map(Number)
+    expect(nums.every(Number.isFinite)).toBe(true)
+    expect(nums[5] ?? 0).toBeLessThan(g.apex.y)
+  })
+})

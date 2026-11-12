@@ -13,6 +13,7 @@ export {
   machFromPrandtlMeyer,
   machFromRhoRho0,
   machFromTT0,
+  machAngleDeg,
   maxPrandtlMeyerDeg,
   prandtlMeyerDeg,
   pressureRatio,
