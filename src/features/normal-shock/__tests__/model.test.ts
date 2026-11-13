@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { normalShock, type NormalShockState } from '@/physics'
-import { isNormalKind, jumpRows, NORMAL_KINDS, seedValue, solveNormalText } from '../model'
+import { jumpRows } from '@/components/charts/jump'
+import { isNormalKind, NORMAL_KINDS, seedValue, solveNormalText } from '../model'
 
 function ns(m1: number, g = 1.4): NormalShockState {
   const r = normalShock(m1, g)

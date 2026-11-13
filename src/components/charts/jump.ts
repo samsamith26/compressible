@@ -15,3 +15,13 @@ export function jumpDomain(ratios: readonly number[]): [number, number] {
   const hi = Math.max(1, ...finite)
   return [lo / 1.6, hi * 1.9]
 }
+
+/** Downstream ÷ upstream for the jump chart: static p, ρ, T, then stagnation p. */
+export function jumpRows(s: { p2P1: number; rho2Rho1: number; t2T1: number; p02P01: number }): JumpRow[] {
+  return [
+    { key: 'p', label: 'p_2/p_1', ratio: s.p2P1 },
+    { key: 'rho', label: 'ρ_2/ρ_1', ratio: s.rho2Rho1 },
+    { key: 't', label: 'T_2/T_1', ratio: s.t2T1 },
+    { key: 'p0', label: 'p_{02}/p_{01}', ratio: s.p02P01 },
+  ]
+}

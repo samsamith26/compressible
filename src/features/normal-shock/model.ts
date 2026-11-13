@@ -1,7 +1,6 @@
 /** Normal shock calculator model: typed inputs → physics, plus chart rows. Pure; no React. */
 
 import type { KindOption } from '@/components/KindSelect'
-import type { JumpRow } from '@/components/charts/jump'
 import { solveNormalShock, type NormalShockInputKind, type NormalShockState } from '@/physics'
 import { notANumber, PENDING, readNumber, seedText, type TextSolve } from '../shared/solveText'
 
@@ -66,14 +65,4 @@ export function seedValue(kind: NormalShockInputKind, s: NormalShockState): stri
     case 'p1P02':
       return seedText(s.p1P02)
   }
-}
-
-/** Downstream ÷ upstream for the jump chart: static p, ρ, T, then stagnation p. */
-export function jumpRows(s: Pick<NormalShockState, 'p2P1' | 'rho2Rho1' | 't2T1' | 'p02P01'>): JumpRow[] {
-  return [
-    { key: 'p', label: 'p_2/p_1', ratio: s.p2P1 },
-    { key: 'rho', label: 'ρ_2/ρ_1', ratio: s.rho2Rho1 },
-    { key: 't', label: 'T_2/T_1', ratio: s.t2T1 },
-    { key: 'p0', label: 'p_{02}/p_{01}', ratio: s.p02P01 },
-  ]
 }

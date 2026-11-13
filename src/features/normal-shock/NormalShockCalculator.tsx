@@ -1,3 +1,4 @@
+import { jumpRows } from '@/components/charts/jump'
 import { JumpChart } from '@/components/charts/JumpChart'
 import { KindSelect } from '@/components/KindSelect'
 import { MachPair } from '@/components/MachPair'
@@ -6,7 +7,7 @@ import { ProblemLine } from '@/components/ProblemLine'
 import { StationTable } from '@/components/StationTable'
 import type { CalcParams } from '@/lib/urlState'
 import { DuctView } from './DuctView'
-import { jumpRows, NORMAL_KINDS, normalKindInfo } from './model'
+import { NORMAL_KINDS, normalKindInfo } from './model'
 import { useNormalShock } from './useNormalShock'
 
 export function NormalShockCalculator({
