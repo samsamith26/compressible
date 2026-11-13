@@ -6,6 +6,7 @@ export default mergeConfig(
   defineConfig({
     test: {
       include: ['src/**/*.test.ts', 'src/**/*.test.tsx'],
+      setupFiles: ['src/test/setup.ts'],
       coverage: {
         provider: 'v8',
         include: ['src/physics/**'],
