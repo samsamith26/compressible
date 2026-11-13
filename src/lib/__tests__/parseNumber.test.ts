@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { nudge, parseNumber } from '../parseNumber'
+import { isPartialNumber, nudge, parseNumber } from '../parseNumber'
 
 describe('parseNumber', () => {
   it.each([
@@ -49,5 +49,15 @@ describe('nudge', () => {
 
   it('keeps exponent notation as a plain number', () => {
     expect(nudge('2e3', 1, false)).toBe('2001')
+  })
+})
+
+describe('isPartialNumber', () => {
+  it.each(['', '-', '1.', '2e', '1e-', '+', '.', ' 3. '])('treats %j as unfinished', (t) => {
+    expect(isPartialNumber(t)).toBe(true)
+  })
+
+  it.each(['abc', '1.2.3', '--1', '1e5e', 'Infinity', '2x'])('treats %j as not a number', (t) => {
+    expect(isPartialNumber(t)).toBe(false)
   })
 })

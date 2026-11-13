@@ -14,7 +14,7 @@ export const WINDOW = {
  */
 export function densityFill(rhoRatio: number): string {
   const t = Math.min(1, Math.max(0, (Math.log10(Math.max(rhoRatio, 1e-6)) + 2) / 3))
-  const v = Math.round(28 + t * 120)
+  const v = Math.round(22 + t * 170)
   return `rgb(${v}, ${v + 4}, ${v + 10})`
 }
 

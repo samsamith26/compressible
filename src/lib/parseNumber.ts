@@ -17,6 +17,15 @@ export function parseNumber(text: string): number | null {
   return Number.isFinite(x) ? x : null
 }
 
+/** Text that could still become a number as the person keeps typing ("1.", "2e", "-"). */
+const PARTIAL_NUMBER = /^[+-]?(\d*\.?\d*)([eE][+-]?\d*)?$/
+
+/** True for unfinished input; false for text that can never parse ("abc", "1.2.3"). */
+export function isPartialNumber(text: string): boolean {
+  const t = normalise(text)
+  return PARTIAL_NUMBER.test(t) && parseNumber(t) === null
+}
+
 /**
  * Step a typed number up or down by one unit in its last typed decimal place
  * ("1.4" → 0.1, "2" → 1), or ten units with `big`. Works on scaled integers so

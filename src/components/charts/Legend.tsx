@@ -23,7 +23,9 @@ export function Legend({ items }: { items: readonly LegendItem[] }) {
               <line x1="1" x2="17" y1="5" y2="5" stroke={it.color} strokeWidth={2} strokeDasharray={it.dashed === true ? '4 3' : undefined} strokeLinecap="round" />
             )}
           </svg>
-          <Quantity label={it.label} />
+          <span>
+            <Quantity label={it.label} />
+          </span>
         </li>
       ))}
     </ul>

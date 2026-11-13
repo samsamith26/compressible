@@ -37,7 +37,7 @@ export function StationTable({
   stale: boolean
 }) {
   return (
-    <div className="min-w-0">
+    <div className="max-w-xl min-w-0">
       <table
         data-stale={stale}
         aria-label={caption}

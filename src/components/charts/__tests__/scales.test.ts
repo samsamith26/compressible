@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { clampToRange, niceLogTicks } from '../scales'
+import { clampToRange, formatTick, niceLogTicks } from '../scales'
 
 describe('clampToRange', () => {
   it('clamps into [lo, hi] and passes values inside through', () => {
@@ -27,5 +27,21 @@ describe('niceLogTicks', () => {
     const ticks = niceLogTicks(1e-6, 1e6)
     expect(ticks.length).toBeLessThanOrEqual(7)
     expect(ticks).toContain(1)
+  })
+})
+
+describe('formatTick', () => {
+  it.each([
+    [10, '10'],
+    [100, '100'],
+    [1, '1'],
+    [0.2, '0.2'],
+    [0.01, '0.01'],
+    [0, '0'],
+    [2.5, '2.5'],
+    [1e6, '10⁶'],
+    [1e-5, '10⁻⁵'],
+  ])('%d → %s', (v, s) => {
+    expect(formatTick(v)).toBe(s)
   })
 })

@@ -19,3 +19,28 @@ export function niceLogTicks(lo: number, hi: number): number[] {
   }
   return ticks
 }
+
+const SUP: Readonly<Record<string, string>> = {
+  '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹', '-': '⁻',
+}
+
+/** Short axis tick label: plain for 1e-4 ≤ |v| < 1e5, "10ⁿ" for powers of ten outside that. */
+export function formatTick(v: number): string {
+  if (v === 0) return '0'
+  const a = Math.abs(v)
+  if (a >= 1e-4 && a < 1e5) return String(Number(v.toPrecision(3)))
+  const e = Math.round(Math.log10(a))
+  return `10${[...String(e)].map((c) => SUP[c] ?? c).join('')}`
+}
+
+/**
+ * Series whose direct labels would not collide (at least `gap` px apart), kept in
+ * series order; the legend carries any label that is dropped.
+ */
+export function separatedLabels<S>(series: readonly S[], yOf: (s: S) => number, gap: number): S[] {
+  const kept: S[] = []
+  for (const s of series) {
+    if (kept.every((k) => Math.abs(yOf(k) - yOf(s)) >= gap)) kept.push(s)
+  }
+  return kept
+}
