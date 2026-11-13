@@ -6,3 +6,12 @@ coverage/
 .playwright-mcp/
 # Third-party reference pages (VT calculator); only derived fixtures are committed
 reference/
+logs
+*.log
+dist-ssr
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+.superpowers/
+verification/

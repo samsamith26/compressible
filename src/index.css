@@ -1,0 +1,145 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Design tokens. State 1 / upstream is "up" (blue), state 2 / downstream is "down" (amber).
+ * Contrast of every text pair is checked in src/lib/__tests__/contrast.test.ts; keep the two in sync.
+ */
+:root {
+  --paper: #f5f3ee;
+  --panel: #fbfaf7;
+  --ink: #17191d;
+  --muted: #5b5f68;
+  --rule: #d9d4c8;
+  --grid: #e7e3d9;
+  --up: #1f5fbf;
+  --down: #a34b06;
+  --danger: #b42318;
+  --teal: #0f6b64;
+  --violet: #6a32c9;
+  --ring: #1f5fbf;
+  color-scheme: light;
+}
+
+.dark {
+  --paper: #0e1013;
+  --panel: #14171c;
+  --ink: #e7e5df;
+  --muted: #9aa0aa;
+  --rule: #2a2f37;
+  --grid: #1c2027;
+  --up: #6fa8ff;
+  --down: #ffad5c;
+  --danger: #ff8a7a;
+  --teal: #4fd1c5;
+  --violet: #b99cf7;
+  --ring: #6fa8ff;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-panel: var(--panel);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-rule: var(--rule);
+  --color-grid: var(--grid);
+  --color-up: var(--up);
+  --color-down: var(--down);
+  --color-danger: var(--danger);
+  --color-teal: var(--teal);
+  --color-violet: var(--violet);
+  --color-ring: var(--ring);
+  --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', monospace;
+}
+
+@layer base {
+  html {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    transition:
+      background-color 200ms ease,
+      color 200ms ease;
+  }
+
+  body {
+    min-height: 100dvh;
+    background: var(--paper);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--up) 30%, transparent);
+  }
+}
+
+@layer utilities {
+  .num {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums slashed-zero;
+  }
+
+  /* Graph-paper ground used behind charts and diagrams. */
+  .graph-paper {
+    background-color: var(--panel);
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 16px 16px;
+  }
+
+  /* Markers and shock lines glide to typed values; .dragging disables it so drags track the pointer. */
+  .glide {
+    transition: transform 160ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .dragging .glide {
+    transition: none;
+  }
+}
+
+@keyframes flash {
+  from {
+    color: var(--flash, var(--up));
+  }
+}
+
+.flash {
+  animation: flash 600ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Shock-tube particles: each region drifts one particle spacing per period (spacing ∝ velocity). */
+@keyframes drift {
+  to {
+    transform: translateX(var(--spacing));
+  }
+}
+
+.drift {
+  animation: drift 1.4s linear infinite;
+}
+
+/* Streamlines morph to new shapes (browsers without `d` transitions simply jump). */
+.glide-path {
+  transition: d 160ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.dragging .glide-path {
+  transition: none;
+}
