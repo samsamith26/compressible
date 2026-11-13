@@ -35,8 +35,11 @@ export function nudge(text: string, dir: 1 | -1, big: boolean): string | null {
   const x = parseNumber(text)
   if (x === null) return null
   const t = normalise(text)
-  const decimals = /[eE]/.test(t) ? 0 : (t.split('.')[1] ?? '').length
+  const [mantissaText = '', exponentText] = t.split(/[eE]/)
+  const decimals = (mantissaText.split('.')[1] ?? '').length
   const scale = 10 ** decimals
-  const next = (Math.round(x * scale) + dir * (big ? 10 : 1)) / scale
-  return next.toFixed(decimals)
+  const mantissa = exponentText === undefined ? x : Number(mantissaText)
+  const next = ((Math.round(mantissa * scale) + dir * (big ? 10 : 1)) / scale).toFixed(decimals)
+  // Exponent form keeps its exponent: "1.5e-3" steps to "1.6e-3", not to 1.
+  return exponentText === undefined ? next : `${next}e${exponentText}`
 }

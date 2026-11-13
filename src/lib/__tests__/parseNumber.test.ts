@@ -47,8 +47,10 @@ describe('nudge', () => {
     expect(nudge('1.', 1, false)).toBeNull()
   })
 
-  it('keeps exponent notation as a plain number', () => {
-    expect(nudge('2e3', 1, false)).toBe('2001')
+  it('steps exponent notation in the last digit of the mantissa', () => {
+    expect(nudge('1.5e-3', 1, false)).toBe('1.6e-3')
+    expect(nudge('1.5e-3', -1, true)).toBe('0.5e-3')
+    expect(nudge('2e3', 1, false)).toBe('3e3')
   })
 })
 

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useLastOk } from '@/hooks/useLastOk'
-import { parseNumber } from '@/lib/parseNumber'
+import { useLastValidGamma } from '@/hooks/useLastValidGamma'
 import type { CalcParams } from '@/lib/urlState'
 import type { ObliqueInputKind } from '@/physics'
 import { dragToInput, isObliqueKind, OBLIQUE_DEFAULTS, seedValue, solveObliqueText, type ObliqueView } from './model'
@@ -15,13 +15,14 @@ export function useOblique(initial: CalcParams, onParamsChange: (p: CalcParams) 
   const [gamma, setGamma] = useState(initial.gamma ?? OBLIQUE_DEFAULTS.gamma)
   const [m1, setM1] = useState(initial.m1 ?? OBLIQUE_DEFAULTS.m1)
   const [kind, setKindState] = useState<ObliqueInputKind>(isObliqueKind(initial.kind) ? initial.kind : OBLIQUE_DEFAULTS.kind)
-  const [value, setValue] = useState(
-    isObliqueKind(initial.kind) ? (initial.value ?? OBLIQUE_DEFAULTS.value) : OBLIQUE_DEFAULTS.value,
+  const [value, setValue] = useState(() =>
+    isObliqueKind(initial.kind) ? (initial.value ?? seedValue(initial.kind, defaultView()) ?? '') : OBLIQUE_DEFAULTS.value,
   )
 
   const solved = useMemo(() => solveObliqueText(gamma, m1, kind, value), [gamma, m1, kind, value])
   const view = useLastOk(solved.result, defaultView())
   const error = solved.result?.ok === false ? solved.result.error.message : undefined
+  const gammaValue = useLastValidGamma(gamma)
 
   useEffect(() => {
     onParamsChange({ gamma, m1, kind, value })
@@ -29,14 +30,12 @@ export function useOblique(initial: CalcParams, onParamsChange: (p: CalcParams) 
 
   function setKind(next: ObliqueInputKind) {
     setKindState(next)
-    const seeded = seedValue(next, view)
-    if (seeded !== null) setValue(seeded)
+    setValue(seedValue(next, view) ?? '')
   }
 
   /** Set the state from a wave angle picked on the θ-β-M chart, keeping the user's kind. */
   function setBeta(betaDeg: number) {
-    const g = parseNumber(gamma)
-    const input = dragToInput(kind, view.m1, betaDeg, g !== null && g > 1 ? g : 1.4)
+    const input = dragToInput(kind, view.m1, betaDeg, gammaValue)
     setKindState(input.kind)
     setValue(input.value)
   }
@@ -52,7 +51,7 @@ export function useOblique(initial: CalcParams, onParamsChange: (p: CalcParams) 
     setValue,
     setBeta,
     view,
-    gammaValue: parseNumber(gamma) ?? 1.4,
+    gammaValue,
     stale: solved.result?.ok !== true,
     gammaError: solved.field === 'gamma' ? error : undefined,
     m1Error: solved.field === 'm1' ? error : undefined,

@@ -137,6 +137,12 @@ export function seedValue(kind: ObliqueInputKind, v: ObliqueView): string | null
   }
 }
 
+/** x rounded down to `sig` significant figures. */
+function floorSig(x: number, sig: number): number {
+  const scale = 10 ** (sig - 1 - Math.floor(Math.log10(Math.abs(x))))
+  return Math.floor(x * scale) / scale
+}
+
 function machAngleDeg(m1: number): number {
   return (Math.asin(1 / m1) * 180) / Math.PI
 }
@@ -162,7 +168,12 @@ export function dragToInput(
     case 'thetaStrong': {
       const max = maxDeflection(m1, gamma)
       const strong = max.ok && beta > max.value.betaDeg
-      return { kind: strong ? 'thetaStrong' : 'thetaWeak', value: seedText(thetaFromBetaDeg(m1, beta, gamma), 4) }
+      const theta = thetaFromBetaDeg(m1, beta, gamma)
+      // Round to 4 significant figures, but never up past θmax: that would read as detached.
+      const rounded = Number(theta.toPrecision(4))
+      const limit = max.ok ? max.value.thetaMaxDeg : Infinity
+      const value = rounded <= limit ? rounded : floorSig(theta, 4)
+      return { kind: strong ? 'thetaStrong' : 'thetaWeak', value: String(value) }
     }
   }
 }

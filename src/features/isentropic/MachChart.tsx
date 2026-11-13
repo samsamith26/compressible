@@ -54,6 +54,8 @@ export function MachChart({
 }) {
   const [hover, setHover] = useState<RatioPoint | null>(null)
   const multi = series.length > 1
+  // No samples (should not happen: γ comes from the last valid value) means nothing to draw.
+  if (points.length === 0) return null
 
   return (
     <ChartFigure

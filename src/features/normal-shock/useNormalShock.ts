@@ -15,8 +15,8 @@ export function useNormalShock(initial: CalcParams, onParamsChange: (p: CalcPara
   const [kind, setKindState] = useState<NormalShockInputKind>(
     isNormalKind(initial.kind) ? initial.kind : NORMAL_DEFAULTS.kind,
   )
-  const [value, setValue] = useState(
-    isNormalKind(initial.kind) ? (initial.value ?? NORMAL_DEFAULTS.value) : NORMAL_DEFAULTS.value,
+  const [value, setValue] = useState(() =>
+    isNormalKind(initial.kind) ? (initial.value ?? seedValue(initial.kind, defaultState())) : NORMAL_DEFAULTS.value,
   )
 
   const solved = useMemo(() => solveNormalText(gamma, kind, value), [gamma, kind, value])
