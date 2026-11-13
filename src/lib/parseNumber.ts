@@ -1,0 +1,33 @@
+/**
+ * Parse what a person typed into a number field. Half-typed input ("-", "1.",
+ * "2e") is not an error, it is unfinished, so it parses to null and the UI keeps
+ * showing the last valid result instead of flashing a message.
+ */
+
+const COMPLETE_NUMBER = /^[+-]?(\d+(\.\d+)?|\.\d+)([eE][+-]?\d+)?$/
+
+function normalise(text: string): string {
+  return text.trim().replace(',', '.').replace('−', '-')
+}
+
+export function parseNumber(text: string): number | null {
+  const t = normalise(text)
+  if (!COMPLETE_NUMBER.test(t)) return null
+  const x = Number(t)
+  return Number.isFinite(x) ? x : null
+}
+
+/**
+ * Step a typed number up or down by one unit in its last typed decimal place
+ * ("1.4" → 0.1, "2" → 1), or ten units with `big`. Works on scaled integers so
+ * 0.1 + 0.1 stays "0.2".
+ */
+export function nudge(text: string, dir: 1 | -1, big: boolean): string | null {
+  const x = parseNumber(text)
+  if (x === null) return null
+  const t = normalise(text)
+  const decimals = /[eE]/.test(t) ? 0 : (t.split('.')[1] ?? '').length
+  const scale = 10 ** decimals
+  const next = (Math.round(x * scale) + dir * (big ? 10 : 1)) / scale
+  return next.toFixed(decimals)
+}
