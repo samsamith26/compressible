@@ -5,6 +5,7 @@
 
 import {
   err,
+  maxDeflection,
   ok,
   solveOblique,
   type MaxDeflection,
@@ -12,6 +13,9 @@ import {
   type ObliqueSolution,
   type Result,
 } from '@/physics'
+import { attribute, parseField, type FieldResult } from '@/lib/fields'
+import { toQueryNumber } from '@/lib/format'
+import { parseNumber } from '@/lib/parseNumber'
 
 export interface Ramp {
   /** This ramp's additional turning angle. */
@@ -109,4 +113,99 @@ export function totalTurn(ramps: readonly Ramp[]): number {
 /** The comparison case: one weak oblique shock turning the flow through the total angle. */
 export function compareSingle(m1: number, ramps: readonly Ramp[], gamma: number): Result<ObliqueSolution> {
   return solveOblique(m1, { kind: 'thetaWeak', value: totalTurn(ramps) }, gamma)
+}
+
+// --- Text inputs ------------------------------------------------------------------------------
+
+/** Which input an error belongs to: γ, M₁, or ramp i's angle or length (1-based). */
+export type InletField = 'gamma' | 'm1' | `theta${number}` | `length${number}`
+
+export interface InletText {
+  readonly gamma: string
+  readonly m1: string
+  readonly thetas: readonly string[]
+  readonly lengths: readonly string[]
+}
+
+export interface InletSolution {
+  readonly m1: number
+  readonly ramps: readonly Ramp[]
+  readonly chain: Chain
+  /** One shock through the total turning angle, from the same M₁. */
+  readonly single: ObliqueSolution
+}
+
+export type ShadeProperty = 'M' | 'p' | 'T' | 'p0'
+export const SHADE_PROPERTIES: readonly ShadeProperty[] = ['M', 'p', 'T', 'p0']
+
+export const DEFAULT_THETA_TEXTS: readonly string[] = DEFAULT_RAMPS.map((r) => String(r.thetaDeg))
+export const DEFAULT_LENGTH_TEXTS: readonly string[] = DEFAULT_RAMPS.map((r) => String(r.length))
+
+/** A comma-separated URL list with 1–4 entries, kept as typed; anything else falls back. */
+export function parseList(text: string | null, fallback: readonly string[]): string[] {
+  if (text === null || text === '') return [...fallback]
+  const items = text.split(',')
+  return items.length >= 1 && items.length <= MAX_RAMPS ? items : [...fallback]
+}
+
+function fail(field: InletField, message: string): FieldResult<never, InletField> {
+  return { ok: false, field, message }
+}
+
+export function solveInletText(t: InletText): FieldResult<InletSolution, InletField> {
+  const gamma = parseField(t.gamma, 'γ')
+  if (!gamma.ok) return attribute(gamma, 'gamma')
+  const m1 = parseField(t.m1, 'upstream Mach number')
+  if (!m1.ok) return attribute(m1, 'm1')
+  // Check the upstream state first, so an M₁ problem is reported on the M₁ field.
+  const upstream = maxDeflection(m1.value, gamma.value)
+  if (!upstream.ok) return attribute(upstream, 'm1')
+
+  const ramps: Ramp[] = []
+  for (const [i, thetaText] of t.thetas.entries()) {
+    const n = i + 1
+    const theta = parseField(thetaText, `ramp ${n} angle`)
+    if (!theta.ok) return attribute(theta, `theta${n}`)
+    if (theta.value < 0) return fail(`theta${n}`, `Ramp ${n}: turning angle must be at least 0`)
+    const length = parseField(t.lengths[i] ?? '', `ramp ${n} length`)
+    if (!length.ok) return attribute(length, `length${n}`)
+    if (!(length.value > 0)) return fail(`length${n}`, `Ramp ${n} length must be greater than 0`)
+    ramps.push({ thetaDeg: theta.value, length: length.value })
+  }
+
+  const chain = solveChain(m1.value, ramps, gamma.value)
+  if (!chain.ok) return attribute(chain, 'm1')
+  const single = compareSingle(m1.value, ramps, gamma.value)
+  if (!single.ok) return attribute(single, 'm1')
+  return { ok: true, value: { m1: m1.value, ramps, chain: chain.value, single: single.value } }
+}
+
+/** Append a ramp: 8°, at 0.7× the previous length (or 1 if that isn't a number). No-op at four. */
+export function addRampTexts(
+  thetas: readonly string[],
+  lengths: readonly string[],
+): { thetas: string[]; lengths: string[] } {
+  if (thetas.length >= MAX_RAMPS) return { thetas: [...thetas], lengths: [...lengths] }
+  const previous = parseNumber(lengths[lengths.length - 1] ?? '')
+  const length = previous !== null && previous > 0 ? toQueryNumber(previous * 0.7, 3) : '1'
+  return { thetas: [...thetas, '8'], lengths: [...lengths, length] }
+}
+
+/** Remove ramp `index0` (0-based) from both lists. The last remaining ramp can't be removed. */
+export function removeRampTexts(
+  thetas: readonly string[],
+  lengths: readonly string[],
+  index0: number,
+): { thetas: string[]; lengths: string[] } {
+  if (thetas.length <= 1) return { thetas: [...thetas], lengths: [...lengths] }
+  return {
+    thetas: thetas.filter((_, i) => i !== index0),
+    lengths: lengths.filter((_, i) => i !== index0),
+  }
+}
+
+/** The selected shock (1-based), kept within the shocks that exist. */
+export function clampSelection(selected: number, shockCount: number): number {
+  if (!Number.isFinite(selected) || selected < 1) return 1
+  return Math.max(1, Math.min(Math.floor(selected), shockCount))
 }
