@@ -82,13 +82,12 @@ In the cloud container run it as `CHROMIUM_PATH=/opt/pw-browsers/chromium npm ru
    - `normalShockRaw` recomputes M2² and p2/p1 inside its log helpers.
 5. ~~CRLF warnings~~: `.gitattributes` (`* text=auto eol=lf`) added.
 6. **The VT fixtures depend on a live third-party page.** Re-recording (`npm run fixtures:vt`) needs network access and breaks if VT changes its markup. The committed JSON is the source of truth for tests.
-7. **The cloud session could not push.** GitHub returned 403 ("Claude doesn't have GitHub access to samsamith26/compressible"). All UI work is committed locally on `claude/great-bell-lrkq1u`. Reconnect GitHub at https://claude.ai/connect-github (and install the Claude GitHub App on the repo if it isn't), then push that branch.
+7. ~~Cloud push blocked~~: GitHub access was fixed and `claude/great-bell-lrkq1u` is pushed.
 8. **The D3 bundle and fonts** make the JS ~360 kB (115 kB gzipped). Fine for now; code-split per calculator if it grows.
 
 ## Next steps (in order)
 1. **Decisions for you:**
    - Merge the physics PR (open issue 1), and decide the branch policy (issue 2). The UI branch `claude/great-bell-lrkq1u` contains the physics commits plus the UI, so merging it alone also brings in the physics.
    - Review the visual direction (open it with `npm run dev`). If you'd rather run the frontend-design skill locally for a second opinion, the tokens live in one place (`src/index.css`).
-   - Fix GitHub access for cloud sessions and push the branch (open issue 7).
 2. **Small follow-ups:** the remaining review cleanups in open issue 4; optional `prefers-color-scheme` change listener in `useTheme` (it follows the OS only at load); a "copy link" button next to the tabs (the URL already holds the state).
 3. **Phase 2 (later):** the nozzle simulator, built as `src/physics/nozzle.ts` plus `src/features/nozzle/`. It reuses `areaRatio`, `machFromAreaRatio`, `pressureRatio` and `normalShock`, and can reuse `RatioChart`'s axes, `JumpChart`, `useSearchParams` and the calculator layout.
