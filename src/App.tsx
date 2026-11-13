@@ -3,6 +3,7 @@ import { Footer } from '@/components/layout/Footer'
 import { ThemeToggle } from '@/components/layout/ThemeToggle'
 import { Wordmark } from '@/components/layout/Wordmark'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { InletCalculator } from '@/features/inlet/InletCalculator'
 import { IsentropicCalculator } from '@/features/isentropic/IsentropicCalculator'
 import { NormalShockCalculator } from '@/features/normal-shock/NormalShockCalculator'
 import { ObliqueCalculator } from '@/features/oblique-shock/ObliqueCalculator'
@@ -12,6 +13,7 @@ const VIEWS: Readonly<Record<CalculatorId, () => ReactElement>> = {
   isentropic: IsentropicCalculator,
   normal: NormalShockCalculator,
   oblique: ObliqueCalculator,
+  inlet: InletCalculator,
 }
 
 export function App() {
