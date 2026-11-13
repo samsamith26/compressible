@@ -1,111 +1,168 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource/b612/400.css";
+@import "@fontsource/b612/700.css";
+@import "@fontsource-variable/atkinson-hyperlegible-next";
+
+/* Theme is set on <html data-theme> before first paint (index.html). */
+@custom-variant dark (&:is([data-theme="dark"] *));
+
+/*
+ * "Colour schlieren" tokens. Values mirror src/lib/tokens.ts, where contrast is tested.
+ * shadcn's semantic names are mapped onto them so its primitives share the palette.
+ */
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+  --bg: #eef1f3;
+  --surface: #ffffff;
+  --ink: #14212b;
+  --ink-2: #4a5866;
+  --rule: #d3dae0;
+  --s1: #0a7fc2;
+  --s2: #c2367a;
+  --c-p: #5b4bd6;
+  --c-rho: #1a8a6e;
+  --c-t: #b0600a;
+  --error: #b3261e;
+  --detached: #8a5a00;
+  --focus: #0a7fc2;
+  --grid: #dde3e8;
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+  --radius: 0.5rem;
+  --background: var(--bg);
+  --foreground: var(--ink);
+  --card: var(--surface);
+  --card-foreground: var(--ink);
+  --popover: var(--surface);
+  --popover-foreground: var(--ink);
+  --primary: var(--ink);
+  --primary-foreground: var(--bg);
+  --secondary: var(--rule);
+  --secondary-foreground: var(--ink);
+  --muted: var(--rule);
+  --muted-foreground: var(--ink-2);
+  --accent: #e2e8ed;
+  --accent-foreground: var(--ink);
+  --destructive: var(--error);
+  --border: var(--rule);
+  --input: #b9c3cc;
+  --ring: var(--focus);
+  color-scheme: light;
+}
 
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+[data-theme="dark"] {
+  --bg: #11171d;
+  --surface: #182028;
+  --ink: #e6ebef;
+  --ink-2: #9aa8b5;
+  --rule: #26313b;
+  --s1: #2f95d4;
+  --s2: #e2609c;
+  --c-p: #8e80f2;
+  --c-rho: #2c9f72;
+  --c-t: #c47e22;
+  --error: #ff8a80;
+  --detached: #e3b04b;
+  --focus: #5fb4ea;
+  --grid: #1d262f;
+  --accent: #212b35;
+  --input: #3a4754;
+  color-scheme: dark;
+}
 
-  @media (max-width: 1024px) {
-    font-size: 16px;
+@theme inline {
+  --font-sans: "Atkinson Hyperlegible Next Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-num: "B612", ui-sans-serif, sans-serif;
+  --font-heading: "B612", ui-sans-serif, sans-serif;
+
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-rule: var(--rule);
+  --color-s1: var(--s1);
+  --color-s2: var(--s2);
+  --color-c-p: var(--c-p);
+  --color-c-rho: var(--c-rho);
+  --color-c-t: var(--c-t);
+  --color-error: var(--error);
+  --color-detached: var(--detached);
+  --color-grid: var(--grid);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+
+  /* Type scale, ratio 1.25 */
+  --text-xs: 0.8125rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.5625rem;
+  --text-2xl: 1.953rem;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    background: var(--bg);
+  }
+  body {
+    @apply bg-background font-sans text-foreground antialiased;
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
+@layer utilities {
+  /* Every number: B612 with tabular digits so columns line up. */
+  .num {
+    font-family: var(--font-num);
+    font-variant-numeric: tabular-nums lining-nums;
   }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
+  .transition-geometry {
+    transition:
+      transform 150ms ease-out,
+      d 150ms ease-out,
+      x1 150ms ease-out,
+      y1 150ms ease-out,
+      x2 150ms ease-out,
+      y2 150ms ease-out,
+      cx 150ms ease-out,
+      cy 150ms ease-out;
   }
-}
-
-#root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-}
-
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
-}
-
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
+  .is-dragging .transition-geometry {
+    transition: none;
   }
 }
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
+
+@media (prefers-reduced-motion: reduce) {
+  .transition-geometry {
+    transition: none;
   }
-}
-p {
-  margin: 0;
-}
-
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
-}
-
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
 }
