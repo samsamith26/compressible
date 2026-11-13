@@ -40,12 +40,13 @@ export function ChartFigure({
   children: (area: PlotArea) => ReactNode
 }) {
   const [ref, width] = useElementWidth<HTMLDivElement>()
+  const w = width ?? 0
   const area: PlotArea = {
-    width,
+    width: w,
     height,
     margin,
     x0: margin.left,
-    x1: Math.max(margin.left + 10, width - margin.right),
+    x1: Math.max(margin.left + 10, w - margin.right),
     y0: margin.top,
     y1: height - margin.bottom,
   }
@@ -56,10 +57,12 @@ export function ChartFigure({
         <span className="font-heading text-base font-bold text-ink">{title}</span>
         {legend}
       </figcaption>
-      <div ref={ref} className="relative w-full">
-        <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} role="img" aria-label={`${title}. ${summary}`} className="block touch-none overflow-visible select-none">
+      <div ref={ref} className="relative w-full" style={{ minHeight: height }}>
+        {width !== null && (
+        <svg width={w} height={height} viewBox={`0 0 ${w} ${height}`} role="group" aria-label={title} aria-description={summary} className="block touch-none overflow-visible select-none">
           {children(area)}
         </svg>
+        )}
       </div>
     </figure>
   )

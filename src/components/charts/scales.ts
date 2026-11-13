@@ -17,7 +17,16 @@ export function niceLogTicks(lo: number, hi: number): number[] {
   for (let e = first; e <= last; e++) {
     if (((e % step) + step) % step === 0) ticks.push(Number(`1e${e}`))
   }
-  return ticks
+  if (ticks.length >= 3) return ticks
+  // Short range: add 2× and 5× multiples so the axis still reads.
+  const dense: number[] = []
+  for (let e = first - 1; e <= last; e++) {
+    for (const m of [1, 2, 5]) {
+      const v = Number(`${m}e${e}`)
+      if (v >= lo && v <= hi) dense.push(v)
+    }
+  }
+  return dense
 }
 
 const SUP: Readonly<Record<string, string>> = {

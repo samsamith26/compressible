@@ -23,6 +23,10 @@ describe('niceLogTicks', () => {
     expect(niceLogTicks(0.01, 1)).toEqual([0.01, 0.1, 1])
   })
 
+  it('adds 2× and 5× ticks when fewer than three powers of ten fit', () => {
+    expect(niceLogTicks(0.45, 8.55)).toEqual([0.5, 1, 2, 5])
+  })
+
   it('thins out ticks across many decades', () => {
     const ticks = niceLogTicks(1e-6, 1e6)
     expect(ticks.length).toBeLessThanOrEqual(7)
