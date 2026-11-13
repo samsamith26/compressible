@@ -11,7 +11,8 @@
     "test": "node scripts/upper-cwd.mjs node_modules/vitest/vitest.mjs run --coverage",
     "test:watch": "node scripts/upper-cwd.mjs node_modules/vitest/vitest.mjs",
     "typecheck": "tsc -b --noEmit",
-    "fixtures:vt": "tsx scripts/record-vt-fixtures.ts"
+    "fixtures:vt": "tsx scripts/record-vt-fixtures.ts",
+    "verify:ui": "npm run build && tsx scripts/verify-ui.ts"
   },
   "dependencies": {
     "@fontsource-variable/atkinson-hyperlegible-next": "^5.3.0",
