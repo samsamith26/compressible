@@ -1,10 +1,10 @@
 # Project notes
 
-Status as of 2026-11-12. Read this before starting work; update it when the status changes.
+Status as of 2026-11-13. Read this before starting work; update it when the status changes.
 
 ## What's built
 
-**Phase 1, physics module (complete).** On `feat/physics-module` (PR into `main` open, not merged).
+**Phase 1, physics module (complete).** On `main`.
 
 | File | Contents |
 |---|---|
@@ -18,8 +18,14 @@ Status as of 2026-11-12. Read this before starting work; update it when the stat
 | `src/physics/index.ts` | public API |
 | `scripts/record-vt-fixtures.ts` | Playwright recorder for VT reference values |
 
-**Phase 1, UI (complete, awaiting your review).** On `claude/great-bell-lrkq1u`, which builds on
-`feat/physics-module`. Plan: `docs/superpowers/plans/2026-11-12-ui.md`.
+**Phase 1, UI (complete; the chosen UI).** Built on `claude/great-bell-lrkq1u` and merged into `main`
+together with the physics. Plan: `docs/superpowers/plans/2026-11-12-ui.md`.
+
+**`ui-local` is reference only.** It is an alternative UI built locally with the frontend-design and
+dataviz skills (the "colour schlieren" direction, porthole flow views, weak and strong solutions side by
+side). It was not merged and is kept on the remote for reference; nothing on `main` depends on it. Its
+own `NOTES.md` and `docs/superpowers/plans/2026-11-13-ui-local.md` describe it. Only its Windows build
+fix (commit 1b54870, below) was ported to this UI.
 
 | Path | Contents |
 |---|---|
@@ -52,14 +58,14 @@ In the cloud container run it as `CHROMIUM_PATH=/opt/pw-browsers/chromium npm ru
 - **Charts:** custom SVG with d3-scale/d3-shape rather than a chart library.
 - **URL state:** calculator state mirrored to the URL.
 - **Linting:** oxlint instead of ESLint. The current Vite template ships oxlint and TypeScript 7, and typescript-eslint support for TS 7 is uncertain. All three required rules were verified by planting violations.
-- **`npm test` runs through `scripts/vitest.mjs`.** This works around the lowercase drive-letter bug described in CLAUDE.md.
+- **Every npm script that runs Vite or Vitest goes through `scripts/upper-cwd.mjs`** (`dev`, `build`, `preview`, `test`, `test:watch`). A lowercase `c:` working directory, which is VS Code's default here, makes Vitest load twice and makes Vite bundle React twice ("Invalid hook call"). Ported from `ui-local` (commit 1b54870); it replaces the old `scripts/vitest.mjs`.
 - **Mach domain capped at [1e-12, 1e6].** Each input range is exactly what that domain produces. Mach numbers above 1e6 are rejected, because M² overflows past ~1e154.
 - **Floating-point margins:**
   - The wave-angle lower bound is μ·(1 − 1e-12), so β typed as exactly μ (e.g. 30° at M1 = 2) is accepted.
   - θ within 1e-12° of θmax counts as θmax (weak = strong = β_max).
 - **Coverage ignore:** one `/* v8 ignore */` on the root-failure return in `obliqueFromTheta`. That bracket is valid by construction.
 - **VT fixture tolerance:** max(2 × last displayed digit, 1e-5 relative). In 17 cases VT's own inverse stops short (e.g. it echoes p02/p01 = 0.92199659 for an input of 0.922). There, the test compares our forward relations at VT's answer, and our inverse to the input to 1e-9.
-- **Branch workflow:** work happened on a feature branch rather than `main`. The UI phase was done on `claude/great-bell-lrkq1u` (the cloud session's assigned branch), stacked on `feat/physics-module`.
+- **Branch workflow:** the physics was built on `feat/physics-module` and the UI on `claude/great-bell-lrkq1u` (stacked on it). Both were merged into `main` through one PR, after which both remote branches were deleted.
 
 ### Made by Claude in the UI phase (open to change, please review)
 - **Visual direction ("wind-tunnel instrument")** chosen without the frontend-design skill, which wasn't available in the cloud session. IBM Plex Sans + Plex Mono, warm paper / graphite grounds, blue = state 1 / upstream, amber = state 2 / downstream, graph-paper chart grounds. Details and rationale in the UI plan. Screenshots: run `npm run verify:ui`, then see `verification/`.
@@ -74,9 +80,9 @@ In the cloud container run it as `CHROMIUM_PATH=/opt/pw-browsers/chromium npm ru
 - **Vitest processes `index.css`** (`test.css.include`) so the contrast test can read the real tokens with `?raw`.
 
 ## Open issues
-1. **The PR is not merged.** `main` has only the spec and plan. Merge it on GitHub (fast-forward, no conflicts), or have Claude fast-forward `main` locally and push.
+1. ~~PR not merged~~: physics and UI are merged into `main`.
 2. **Branch policy for the UI phase is undecided.** The options are a feature branch with a PR, or working directly on `main`. Ask the user.
-3. **The GitHub CLI (`gh`) is not installed,** so Claude can't open PRs itself. Install it with `winget install GitHub.cli`, then run `gh auth login`.
+3. ~~No GitHub CLI~~: `gh` is installed and authenticated, so Claude can open and merge PRs. Terminals opened before the install don't have it on PATH; restart them, or call `"C:Program FilesGitHub CLIgh.exe"`.
 4. **Deferred minor cleanups from the code review:**
    - `solveOblique` computes θmax and validation twice for θ inputs.
    - `normalShockRaw` recomputes M2² and p2/p1 inside its log helpers.
@@ -87,7 +93,7 @@ In the cloud container run it as `CHROMIUM_PATH=/opt/pw-browsers/chromium npm ru
 
 ## Next steps (in order)
 1. **Decisions for you:**
-   - Merge the physics PR (open issue 1), and decide the branch policy (issue 2). The UI branch `claude/great-bell-lrkq1u` contains the physics commits plus the UI, so merging it alone also brings in the physics.
-   - Review the visual direction (open it with `npm run dev`). If you'd rather run the frontend-design skill locally for a second opinion, the tokens live in one place (`src/index.css`).
+   - Decide the branch policy for future work (open issue 2).
+   - If you want ideas from `ui-local` (e.g. weak and strong solutions side by side, or the porthole views), port them deliberately; the branches are not meant to be merged.
 2. **Small follow-ups:** the remaining review cleanups in open issue 4; optional `prefers-color-scheme` change listener in `useTheme` (it follows the OS only at load); a "copy link" button next to the tabs (the URL already holds the state).
 3. **Phase 2 (later):** the nozzle simulator, built as `src/physics/nozzle.ts` plus `src/features/nozzle/`. It reuses `areaRatio`, `machFromAreaRatio`, `pressureRatio` and `normalShock`, and can reuse `RatioChart`'s axes, `JumpChart`, `useSearchParams` and the calculator layout.
