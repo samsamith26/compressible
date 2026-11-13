@@ -31,7 +31,7 @@ Status and next steps: `NOTES.md`.
 # Testing
 - Physics tests live in `src/physics/__tests__/`. Shared helpers: `unwrap`, `expectRel`, `expectError`, `expectBounds` (`helpers.ts`).
 - VT reference fixtures: `npm run fixtures:vt` re-records `src/physics/__tests__/fixtures/vt-*.json` from the live VT page with Playwright. VT's iterative inverses sometimes stop short; `vt-reference.test.ts` handles that. Don't loosen its tolerance without checking which side is wrong.
-- Always run tests via `npm test`, never bare `npx vitest`. `scripts/vitest.mjs` re-launches Vitest from an upper-case drive path, because a lowercase `c:\` cwd (the VS Code default here) makes Vitest load twice and every suite fail.
+- Always use the npm scripts (`npm test`, `npm run dev`, `npm run build`, `npm run preview`), never bare `npx vitest` or `npx vite`. They go through `scripts/upper-cwd.mjs`, which re-launches the tool from an upper-case drive path: a lowercase `c:\` cwd (the VS Code default here) makes Vitest load twice (every suite fails) and makes Vite bundle React twice ("Invalid hook call" at runtime).
 
 # UI standards
 - Modern, polished, and interactive. Inputs update results live (no "Calculate" buttons).
