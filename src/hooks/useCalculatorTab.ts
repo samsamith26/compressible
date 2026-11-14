@@ -1,12 +1,13 @@
 import { readEnum } from '@/lib/query'
 import { useSearchParams } from './useSearchParams'
 
-export type CalculatorId = 'isentropic' | 'normal' | 'oblique'
+export type CalculatorId = 'isentropic' | 'normal' | 'oblique' | 'inlet'
 
 export const CALCULATORS: readonly { id: CalculatorId; title: string; short: string }[] = [
   { id: 'isentropic', title: 'Isentropic flow', short: 'Isentropic' },
   { id: 'normal', title: 'Normal shock', short: 'Normal' },
   { id: 'oblique', title: 'Oblique shock', short: 'Oblique' },
+  { id: 'inlet', title: 'Multi-ramp inlet', short: 'Inlet' },
 ]
 
 const IDS = CALCULATORS.map((c) => c.id)
