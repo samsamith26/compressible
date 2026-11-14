@@ -144,3 +144,29 @@ describe('InletCalculator recovery and comparison', () => {
     expect(screen.getByText(/A single 40° turn detaches at M₁ = 3 \(θmax 34\.07°\)/)).toBeTruthy()
   })
 })
+
+describe('InletCalculator shock detail', () => {
+  it('selects a shock and shows its upstream Mach number and angle', () => {
+    open()
+    fireEvent.click(screen.getByRole('radio', { name: 'Shock 2' }))
+    expect(new URLSearchParams(window.location.search).get('in.sel')).toBe('2')
+    const detail = screen.getByRole('region', { name: /shock 2 detail/i })
+    expect(detail.textContent).toContain('M₁ = 2.603')
+    expect(detail.textContent).toContain('θ = 8°')
+  })
+
+  it('reuses the θ-β-M point: a key press there edits that ramp', () => {
+    open('&in.sel=2')
+    const point = screen.getByRole('slider', { name: /wave angle β/i })
+    fireEvent.keyDown(point, { key: 'ArrowUp' })
+    const thetas = new URLSearchParams(window.location.search).get('in.t')?.split(',') ?? []
+    expect(thetas[0]).toBe('8')
+    expect(Number(thetas[1])).toBeGreaterThan(8)
+  })
+
+  it('shows the detached view for a detached shock', () => {
+    open('&in.m=2&in.t=15,15,15&in.l=1,1,1&in.sel=2')
+    const detail = screen.getByRole('region', { name: /shock 2 detail/i })
+    expect(detail.textContent).toMatch(/detached/i)
+  })
+})

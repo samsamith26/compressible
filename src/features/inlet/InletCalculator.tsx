@@ -16,6 +16,7 @@ import { RampEditor } from './RampEditor'
 import { RecoveryChart } from './RecoveryChart'
 import { recoverySteps, singleSteps } from './recovery'
 import { RegionTable } from './RegionTable'
+import { ShockDetail } from './ShockDetail'
 import { useInlet } from './useInlet'
 
 const PROPERTY_NAMES: Readonly<Record<ShadeProperty, string>> = {
@@ -164,6 +165,14 @@ export function InletCalculator() {
       <Panel title="Regions" caption="ratios relative to the freestream (region 1)">
         <RegionTable regions={chain.regions} highlight={s.selected + 1} stale={stale} />
       </Panel>
+      <ShockDetail
+        shocks={chain.shocks}
+        selected={s.selected}
+        gamma={s.gamma.value}
+        stale={stale}
+        onSelect={s.select}
+        onBeta={s.setThetaFromBeta}
+      />
     </CalculatorLayout>
   )
 }
