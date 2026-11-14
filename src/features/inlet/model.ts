@@ -209,3 +209,14 @@ export function clampSelection(selected: number, shockCount: number): number {
   if (!Number.isFinite(selected) || selected < 1) return 1
   return Math.max(1, Math.min(Math.floor(selected), shockCount))
 }
+
+/** The comparison drawn as one ramp: the total angle over the total length. */
+export function singleRampLayout(
+  m1: number,
+  ramps: readonly Ramp[],
+  gamma: number,
+): { readonly chain: Chain; readonly ramps: readonly Ramp[] } | null {
+  const single: Ramp[] = [{ thetaDeg: totalTurn(ramps), length: ramps.reduce((sum, r) => sum + r.length, 0) }]
+  const chain = solveChain(m1, single, gamma)
+  return chain.ok ? { chain: chain.value, ramps: single } : null
+}

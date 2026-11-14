@@ -4,6 +4,17 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { CALCULATORS } from '@/hooks/useCalculatorTab'
 import { InletCalculator } from '../InletCalculator'
 
+// jsdom has no layout engine: charts size themselves with ResizeObserver.
+if (!('ResizeObserver' in globalThis)) {
+  Object.defineProperty(globalThis, 'ResizeObserver', {
+    value: class {
+      observe(): void {}
+      unobserve(): void {}
+      disconnect(): void {}
+    },
+  })
+}
+
 afterEach(() => {
   cleanup()
   window.history.replaceState(null, '', '/')
@@ -70,5 +81,44 @@ describe('InletCalculator', () => {
     const field = screen.getByRole('textbox', { name: /ramp 2 length/ })
     expect(field.getAttribute('aria-invalid')).toBe('true')
     expect(screen.getByText('Ramp 2 length must be greater than 0')).toBeTruthy()
+  })
+})
+
+describe('InletCalculator flow field', () => {
+  it('draws one focusable region per chain region', () => {
+    open()
+    const field = screen.getByRole('group', { name: /flow field/i })
+    expect(within(field).getAllByRole('button', { name: /^Region \d/ })).toHaveLength(4)
+  })
+
+  it('shows a region tooltip on focus and pins it with Enter', () => {
+    open()
+    const region2 = screen.getByRole('button', { name: /^Region 2:/ })
+    fireEvent.focus(region2)
+    expect(screen.getByRole('tooltip').textContent).toMatch(/M\s*2\.6031/)
+    fireEvent.keyDown(region2, { key: 'Enter' })
+    expect(region2.getAttribute('aria-pressed')).toBe('true')
+    fireEvent.blur(region2)
+    expect(screen.getByRole('tooltip').textContent).toMatch(/Region 2/)
+  })
+
+  it('moves a ramp corner with the arrow keys', () => {
+    open()
+    const corner = screen.getByRole('slider', { name: /ramp 1 corner/i })
+    fireEvent.keyDown(corner, { key: 'ArrowUp' })
+    expect(new URLSearchParams(window.location.search).get('in.t')).toBe('8.5,8,8')
+    fireEvent.keyDown(corner, { key: 'ArrowRight' })
+    expect(new URLSearchParams(window.location.search).get('in.l')).toBe('1.05,0.6,0.4')
+  })
+
+  it('flags shocks that cross inside the drawing instead of drawing past them', () => {
+    open('&in.l=1,1,1')
+    const notes = screen.getAllByRole('status').map((s) => s.textContent ?? '')
+    expect(notes.some((t) => /Shocks 1 and 2 cross/.test(t))).toBe(true)
+  })
+
+  it('shades by the chosen property with a legend', () => {
+    open('&in.prop=M')
+    expect(screen.getByText(/Shaded by Mach number/)).toBeTruthy()
   })
 })

@@ -2,9 +2,15 @@ import { CalculatorLayout } from '@/components/CalculatorLayout'
 import { GammaField } from '@/components/GammaField'
 import { NumberField } from '@/components/NumberField'
 import { Panel } from '@/components/Panel'
+import { useMemo } from 'react'
+import { useDocumentTheme } from '@/hooks/useDocumentTheme'
 import { messageFor } from '@/lib/fields'
-import { DetachedRampNotice } from './InletNotices'
-import { SHADE_PROPERTIES, type ShadeProperty } from './model'
+import { FlowField } from './FlowField'
+import { inletGeometry } from './geometry'
+import { ConflictNotice, DetachedRampNotice } from './InletNotices'
+import { SHADE_PROPERTIES, singleRampLayout, totalTurn, type ShadeProperty } from './model'
+import { shadeDomain, shadeValue } from './shade'
+import { ShadeLegend } from './ShadeLegend'
 import { RampEditor } from './RampEditor'
 import { RegionTable } from './RegionTable'
 import { useInlet } from './useInlet'
@@ -21,6 +27,18 @@ export function InletCalculator() {
   const { chain } = s.solution
   const stale = s.error !== null
   const detached = chain.shocks.find((sh) => sh.kind === 'detached')
+  const theme = useDocumentTheme()
+  const { m1, ramps } = s.solution
+  const geometry = useMemo(() => inletGeometry(chain, ramps), [chain, ramps])
+  const single = useMemo(() => {
+    const layout = singleRampLayout(m1, ramps, s.gamma.value)
+    return layout === null ? null : { ...layout, geometry: inletGeometry(layout.chain, layout.ramps) }
+  }, [m1, ramps, s.gamma.value])
+  const showSingle = s.compare && single !== null
+  const domain = shadeDomain(
+    chain.regions.map((r) => shadeValue(r, s.property)),
+    showSingle ? single.chain.regions.map((r) => shadeValue(r, s.property)) : [],
+  )
 
   return (
     <CalculatorLayout
@@ -78,6 +96,46 @@ export function InletCalculator() {
       }
     >
       {detached?.kind === 'detached' ? <DetachedRampNotice shock={detached} /> : null}
+      {geometry.conflict === null ? null : <ConflictNotice conflict={geometry.conflict} />}
+      <Panel title="Flow field" caption={<ShadeLegend property={s.property} domain={domain} theme={theme} />}>
+        <div className={showSingle ? 'grid gap-4 p-3 md:grid-cols-[3fr_2fr] md:items-end' : 'p-3'}>
+          <figure className="m-0 grid min-w-0 gap-1">
+            <FlowField
+              label={`Multi-ramp flow field, ${ramps.length} ramp${ramps.length === 1 ? '' : 's'}`}
+              geometry={geometry}
+              chain={chain}
+              ramps={ramps}
+              property={s.property}
+              domain={domain}
+              selected={s.selected}
+              interactive
+              onSelectShock={s.select}
+              onCorner={(i, r) => s.setCorner(i, r.thetaDeg, r.length)}
+              stale={stale}
+            />
+            <figcaption className="text-xs text-muted">
+              {ramps.length} ramp{ramps.length === 1 ? '' : 's'} · drag a corner or focus it and use the arrow keys
+            </figcaption>
+          </figure>
+          {showSingle ? (
+            <figure className="m-0 grid min-w-0 gap-1">
+              <FlowField
+                label="Single-shock comparison"
+                geometry={single.geometry}
+                chain={single.chain}
+                ramps={single.ramps}
+                property={s.property}
+                domain={domain}
+                selected={null}
+                interactive={false}
+                maxHeight={240}
+                stale={stale}
+              />
+              <figcaption className="text-xs text-muted">one ramp turning the full {totalTurn(ramps)}°</figcaption>
+            </figure>
+          ) : null}
+        </div>
+      </Panel>
       <Panel title="Regions" caption="ratios relative to the freestream (region 1)">
         <RegionTable regions={chain.regions} highlight={s.selected + 1} stale={stale} />
       </Panel>

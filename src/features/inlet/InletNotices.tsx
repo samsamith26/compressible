@@ -1,5 +1,22 @@
 import { formatValue } from '@/lib/format'
+import type { Conflict } from './geometry'
 import type { ShockLink } from './model'
+
+/** The drawing stops at the first crossing: the simple chain model can't represent what follows. */
+export function ConflictNotice({ conflict }: { readonly conflict: Conflict }) {
+  const [a, b] = conflict.between
+  const what = conflict.kind === 'shocks' ? `Shocks ${a} and ${b} cross` : `Shock ${a} runs into ramp ${b}`
+  return (
+    <div role="status" className="border-l-2 border-down bg-down/8 px-4 py-3 text-sm leading-relaxed">
+      <p className="font-medium text-down">{what} inside the drawing</p>
+      <p className="text-ink">
+        Beyond that point the waves interact, which this chain of separate oblique shocks doesn’t model, so the
+        drawing is hatched there. The region values still hold along the ramps. Shorten the later ramps or reduce their
+        angles to move the crossing downstream.
+      </p>
+    </div>
+  )
+}
 
 /** A detached ramp ends the chain. Detachment is information (amber), not an error. */
 export function DetachedRampNotice({ shock }: { readonly shock: Extract<ShockLink, { kind: 'detached' }> }) {
