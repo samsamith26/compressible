@@ -2,8 +2,8 @@ import { NumberField } from '@/components/NumberField'
 import { Button } from '@/components/ui/button'
 import { messageFor, type FieldError } from '@/lib/fields'
 import { parseNumber } from '@/lib/parseNumber'
-import { sub } from './labels'
-import { MAX_RAMPS, type InletField } from './model'
+import { sub } from '@/features/inlet/shared/labels'
+import { MAX_RAMPS, type InletField } from '@/features/inlet/ramps/model'
 
 interface RampEditorProps {
   readonly thetaTexts: readonly string[]

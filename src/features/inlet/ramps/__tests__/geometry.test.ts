@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { inletGeometry, rayIntersection, type InletGeometry } from '../geometry'
-import { DEFAULT_RAMPS, solveChain, type Ramp } from '../model'
+import { inletGeometry, rayIntersection, type InletGeometry } from '@/features/inlet/ramps/geometry'
+import { DEFAULT_RAMPS, solveChain, type Ramp } from '@/features/inlet/ramps/model'
 
 function geometry(m1: number, ramps: readonly Ramp[]): InletGeometry {
   const chain = solveChain(m1, ramps, 1.4)

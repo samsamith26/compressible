@@ -1,7 +1,7 @@
 import { formatValue } from '@/lib/format'
 import type { ObliqueSolution } from '@/physics'
-import { plain } from './labels'
-import type { Region } from './model'
+import { plain } from '@/features/inlet/shared/labels'
+import type { Region } from '@/features/inlet/ramps/model'
 
 interface CompareSummaryProps {
   readonly final: Region

@@ -1,8 +1,8 @@
 import { formatValue } from '@/lib/format'
 import type { Theme } from '@/lib/theme'
-import { SHADE_NAMES } from './labels'
-import type { ShadeProperty } from './model'
-import { SHADE_STOPS } from './shade'
+import { SHADE_NAMES } from '@/features/inlet/shared/labels'
+import type { ShadeProperty } from '@/features/inlet/shared/types'
+import { SHADE_STOPS } from '@/features/inlet/shared/shade'
 
 /** One-hue gradient from the lowest to the highest value across the drawn regions. */
 export function ShadeLegend({

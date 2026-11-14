@@ -4,8 +4,7 @@ import { AxisBottom, AxisLeft } from '@/components/charts/Axis'
 import { useElementWidth } from '@/hooks/useElementWidth'
 import { cn } from '@/lib/cn'
 import { formatValue } from '@/lib/format'
-import { plain } from './labels'
-import type { RecoveryStep } from './recovery'
+import type { RecoveryStep } from '@/features/inlet/shared/recovery'
 
 const MARGIN = { top: 26, right: 132, bottom: 42, left: 52 }
 const HEIGHT = 230
@@ -14,10 +13,10 @@ interface RecoveryChartProps {
   readonly steps: readonly RecoveryStep[]
   /** The single-shock comparison, when shown and attached. */
   readonly single: readonly RecoveryStep[] | null
-  readonly rampCount: number
-  /** Shocks actually solved; fewer than `rampCount` when the chain stopped early. */
-  readonly completed: number
-  readonly totalTurnDeg: number
+  /** Name of the chain series, e.g. "3 ramps" or "2 of 3 ramps". */
+  readonly name: string
+  /** Name of the comparison series, e.g. "single 24°"; null when there is none. */
+  readonly singleName: string | null
   readonly stale: boolean
 }
 
@@ -39,8 +38,7 @@ function stepPath(steps: readonly RecoveryStep[], x: (s: number) => number, y: (
  * single-shock case as a second series. Direct labels name both final values; each station is a
  * focusable point with its value.
  */
-export function RecoveryChart({ steps, single, rampCount, completed, totalTurnDeg, stale }: RecoveryChartProps) {
-  const chainName = completed < rampCount ? `${completed} of ${rampCount} ramps` : `${rampCount} ramp${rampCount === 1 ? '' : 's'}`
+export function RecoveryChart({ steps, single, name, singleName, stale }: RecoveryChartProps) {
   const [ref, width] = useElementWidth<HTMLDivElement>()
   const [active, setActive] = useState<number | null>(null)
   const w = Math.max(width, 300)
@@ -72,12 +70,12 @@ export function RecoveryChart({ steps, single, rampCount, completed, totalTurnDe
           <path d={stepPath(steps, x, y, end)} fill="none" stroke="var(--up)" strokeWidth={2.5} aria-hidden="true" />
           {finalMulti === undefined ? null : (
             <text x={x(end) + 6} y={y(finalMulti.p0P01)} dy="0.32em" className="num fill-ink text-[11px]">
-              {chainName} {formatValue(finalMulti.p0P01, 3)}
+              {name} {formatValue(finalMulti.p0P01, 3)}
             </text>
           )}
           {finalSingle === undefined ? null : (
             <text x={x(end) + 6} y={y(finalSingle.p0P01)} dy="0.32em" className="num fill-ink text-[11px]">
-              single {plain(totalTurnDeg)}° {formatValue(finalSingle.p0P01, 3)}
+              {singleName} {formatValue(finalSingle.p0P01, 3)}
             </text>
           )}
           {steps.map((s) => (
@@ -111,11 +109,11 @@ export function RecoveryChart({ steps, single, rampCount, completed, totalTurnDe
       )}
       <ul className="flex flex-wrap gap-x-4 gap-y-1 px-1 text-xs text-muted" aria-label="Legend">
         <li className="flex items-center gap-1.5">
-          <span aria-hidden="true" className="inline-block h-0.5 w-5 bg-up" /> {chainName}
+          <span aria-hidden="true" className="inline-block h-0.5 w-5 bg-up" /> {name}
         </li>
         {single === null ? null : (
           <li className="flex items-center gap-1.5">
-            <span aria-hidden="true" className="inline-block w-5 border-t-2 border-dashed border-down" /> single {plain(totalTurnDeg)}° shock
+            <span aria-hidden="true" className="inline-block w-5 border-t-2 border-dashed border-down" /> {singleName} shock
           </li>
         )}
       </ul>

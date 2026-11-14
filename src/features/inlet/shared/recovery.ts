@@ -1,5 +1,5 @@
 import type { ObliqueSolution } from '@/physics'
-import type { Chain } from './model'
+import type { Chain } from '@/features/inlet/shared/types'
 
 /** Total-pressure recovery after each shock. Station 0 is the freestream; station k follows shock k. */
 export interface RecoveryStep {

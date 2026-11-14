@@ -1,5 +1,5 @@
-import { regionRows } from './labels'
-import type { Region } from './model'
+import { regionRows } from '@/features/inlet/shared/labels'
+import type { Region } from '@/features/inlet/shared/types'
 
 interface RegionTooltipProps {
   readonly region: Region

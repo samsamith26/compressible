@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { cornerFromPointer, nudgeCorner, wallAngleBefore } from '../corner'
+import { cornerFromPointer, nudgeCorner, wallAngleBefore } from '@/features/inlet/ramps/corner'
 
 const ramps = [
   { thetaDeg: 8, length: 1 },

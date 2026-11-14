@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { solveOblique, type ObliqueShockState } from '@/physics'
-import { compareSingle, DEFAULT_RAMPS, solveChain, totalTurn, type Chain, type Ramp } from '../model'
+import { compareSingle, DEFAULT_RAMPS, solveChain, totalTurn, type Chain, type Ramp } from '@/features/inlet/ramps/model'
 
 function chainOf(m1: number, ramps: readonly Ramp[], gamma = 1.4): Chain {
   const r = solveChain(m1, ramps, gamma)
@@ -51,7 +51,7 @@ describe('solveChain', () => {
     ;[3, 2.6031, 2.2595, 1.9529].forEach((m, i) => expect(machs[i]).toBeCloseTo(m, 4))
     expect(chain.regions[3]!.p0P01).toBeCloseTo(0.95595, 5)
     expect(chain.regions[3]!.pP1).toBeCloseTo(4.828, 3)
-    expect(chain.regions.map((r) => r.thetaCumDeg)).toEqual([0, 8, 16, 24])
+    expect(chain.regions.map((r) => r.flowDeg)).toEqual([0, 8, 16, 24])
     expect(chain.regions.map((r) => r.thetaLocalDeg)).toEqual([0, 8, 8, 8])
     expect(chain.regions[0]).toMatchObject({ betaDeg: null, pP1: 1, rhoRho1: 1, tT1: 1, p0P01: 1 })
   })

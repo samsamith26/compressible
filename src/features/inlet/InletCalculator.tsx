@@ -5,19 +5,20 @@ import { Panel } from '@/components/Panel'
 import { useMemo } from 'react'
 import { useDocumentTheme } from '@/hooks/useDocumentTheme'
 import { messageFor } from '@/lib/fields'
-import { CompareSummary } from './CompareSummary'
-import { FlowField } from './FlowField'
-import { inletGeometry } from './geometry'
-import { ConflictNotice, DetachedRampNotice, SubsonicRampNotice } from './InletNotices'
-import { SHADE_PROPERTIES, singleRampLayout, totalTurn, type ShadeProperty } from './model'
-import { shadeDomain, shadeValue } from './shade'
-import { ShadeLegend } from './ShadeLegend'
-import { RampEditor } from './RampEditor'
-import { RecoveryChart } from './RecoveryChart'
-import { recoverySteps, singleSteps } from './recovery'
-import { RegionTable } from './RegionTable'
-import { ShockDetail } from './ShockDetail'
-import { useInlet } from './useInlet'
+import { CompareSummary } from '@/features/inlet/ramps/CompareSummary'
+import { RampField } from '@/features/inlet/ramps/RampField'
+import { plain } from '@/features/inlet/shared/labels'
+import { inletGeometry } from '@/features/inlet/ramps/geometry'
+import { ConflictNotice, DetachedRampNotice, SubsonicRampNotice } from '@/features/inlet/ramps/RampNotices'
+import { SHADE_PROPERTIES, singleRampLayout, totalTurn, type ShadeProperty } from '@/features/inlet/ramps/model'
+import { shadeDomain, shadeValue } from '@/features/inlet/shared/shade'
+import { ShadeLegend } from '@/features/inlet/shared/ShadeLegend'
+import { RampEditor } from '@/features/inlet/ramps/RampEditor'
+import { RecoveryChart } from '@/features/inlet/shared/RecoveryChart'
+import { recoverySteps, singleSteps } from '@/features/inlet/shared/recovery'
+import { RegionTable } from '@/features/inlet/shared/RegionTable'
+import { ShockDetail } from '@/features/inlet/shared/ShockDetail'
+import { useRamps } from '@/features/inlet/ramps/useRamps'
 
 const PROPERTY_NAMES: Readonly<Record<ShadeProperty, string>> = {
   M: 'Mach number M',
@@ -27,7 +28,7 @@ const PROPERTY_NAMES: Readonly<Record<ShadeProperty, string>> = {
 }
 
 export function InletCalculator() {
-  const s = useInlet()
+  const s = useRamps()
   const { chain } = s.solution
   const stale = s.error !== null
   const stopped = chain.shocks.find((sh) => sh.kind !== 'attached')
@@ -107,7 +108,7 @@ export function InletCalculator() {
       <Panel title="Flow field" caption={<ShadeLegend property={s.property} domain={domain} theme={theme} />}>
         <div className={showSingle ? 'grid gap-4 p-3 md:grid-cols-[3fr_2fr] md:items-end' : 'p-3'}>
           <figure className="m-0 grid min-w-0 gap-1">
-            <FlowField
+            <RampField
               label={`Multi-ramp flow field, ${ramps.length} ramp${ramps.length === 1 ? '' : 's'}`}
               geometry={geometry}
               chain={chain}
@@ -126,7 +127,7 @@ export function InletCalculator() {
           </figure>
           {showSingle ? (
             <figure className="m-0 grid min-w-0 gap-1">
-              <FlowField
+              <RampField
                 label="Single-shock comparison"
                 geometry={single.geometry}
                 chain={single.chain}
@@ -148,9 +149,8 @@ export function InletCalculator() {
           <RecoveryChart
             steps={recoverySteps(chain)}
             single={s.compare ? singleSteps(s.solution.single) : null}
-            rampCount={ramps.length}
-            completed={completed}
-            totalTurnDeg={totalTurn(ramps)}
+            name={completed < ramps.length ? `${completed} of ${ramps.length} ramps` : `${ramps.length} ramp${ramps.length === 1 ? '' : 's'}`}
+            singleName={`single ${plain(totalTurn(ramps))}°`}
             stale={stale}
           />
         </div>
@@ -163,7 +163,7 @@ export function InletCalculator() {
               m1={m1}
               totalTurnDeg={totalTurn(ramps)}
               stoppedAt={chain.detachedAt}
-              turnedDeg={final.thetaCumDeg}
+              turnedDeg={final.flowDeg}
             />
           </div>
         ) : null}

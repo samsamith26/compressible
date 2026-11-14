@@ -1,18 +1,18 @@
 // @vitest-environment jsdom
 import { act, renderHook } from '@testing-library/react'
 import { afterEach, describe, expect, it } from 'vitest'
-import { useInlet } from '../useInlet'
+import { useRamps } from '@/features/inlet/ramps/useRamps'
 
 afterEach(() => window.history.replaceState(null, '', '/'))
 
 const at = (search: string) => {
   window.history.replaceState(null, '', `/${search}`)
-  return renderHook(() => useInlet())
+  return renderHook(() => useRamps())
 }
 
 const param = (key: string) => new URLSearchParams(window.location.search).get(key)
 
-describe('useInlet', () => {
+describe('useRamps', () => {
   it('defaults to M1 = 3 with three 8° ramps, compare on, shading by p0', () => {
     const { result } = at('?calc=inlet')
     expect(result.current.solution.m1).toBe(3)
@@ -80,7 +80,7 @@ describe('useInlet', () => {
   })
 })
 
-describe('useInlet list encoding', () => {
+describe('useRamps list encoding', () => {
   it('writes a typed decimal comma as a point so the URL list stays intact', () => {
     const { result } = at('?calc=inlet')
     act(() => result.current.setThetaText(0, '8,5'))

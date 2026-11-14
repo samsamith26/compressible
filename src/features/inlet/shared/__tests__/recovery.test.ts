@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { compareSingle, DEFAULT_RAMPS, solveChain } from '../model'
-import { recoverySteps, singleSteps } from '../recovery'
+import { compareSingle, DEFAULT_RAMPS, solveChain } from '@/features/inlet/ramps/model'
+import { recoverySteps, singleSteps } from '@/features/inlet/shared/recovery'
 
 describe('recovery steps', () => {
   it('steps down once per shock for the default chain', () => {

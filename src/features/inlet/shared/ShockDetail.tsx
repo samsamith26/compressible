@@ -7,8 +7,8 @@ import { WedgeDiagram } from '@/features/oblique-shock/WedgeDiagram'
 import { usePointerDrag } from '@/hooks/usePointerDrag'
 import { cn } from '@/lib/cn'
 import { formatValue } from '@/lib/format'
-import { plain } from './labels'
-import type { ShockLink } from './model'
+import { plain } from '@/features/inlet/shared/labels'
+import type { ShockLink } from '@/features/inlet/shared/types'
 
 interface ShockDetailProps {
   readonly shocks: readonly ShockLink[]
@@ -65,7 +65,7 @@ export function ShockDetail({ shocks, selected, gamma, stale, onSelect, onBeta }
       }
     >
       <p className="border-b border-rule px-4 py-2.5 text-sm text-ink">
-        Shock {shock.index} on its own: upstream M₁ = <span className="num">{formatValue(shock.upstreamMach, 4)}</span>, ramp θ ={' '}
+        Shock {shock.index} on its own: upstream M₁ = <span className="num">{formatValue(shock.upstreamMach, 4)}</span>, turning θ ={' '}
         <span className="num">{plain(shock.thetaDeg)}°</span>
         {state === null ? null : (
           <>

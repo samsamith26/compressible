@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { contrastRatio } from '@/lib/contrast'
-import { DEFAULT_RAMPS, singleRampLayout, solveChain } from '../model'
-import { labelInk, mix, SHADE_STOPS, shadeColor, shadeDomain, shadeValue } from '../shade'
+import { DEFAULT_RAMPS, singleRampLayout, solveChain } from '@/features/inlet/ramps/model'
+import { labelInk, mix, SHADE_STOPS, shadeColor, shadeDomain, shadeValue } from '@/features/inlet/shared/shade'
 
 function luminanceOrder(hexes: string[]): number[] {
   return hexes.map((h) => contrastRatio(h, '#000000'))

@@ -1,98 +1,118 @@
-import { useId, useState, type KeyboardEvent, type PointerEvent } from 'react'
+import { useId, useState, type ReactNode } from 'react'
 import { useDocumentTheme } from '@/hooks/useDocumentTheme'
 import { useElementWidth } from '@/hooks/useElementWidth'
 import { cn } from '@/lib/cn'
-import { formatValue } from '@/lib/format'
-import { cornerFromPointer, nudgeCorner, wallAngleBefore } from './corner'
-import { fieldFrame } from './frame'
-import type { InletGeometry, Pt } from './geometry'
+import { fieldFrame, type Frame } from './frame'
 import { regionRows } from './labels'
-import type { Chain, Ramp, ShadeProperty } from './model'
 import { RegionTooltip } from './RegionTooltip'
 import { labelInk, shadeColor, shadeValue } from './shade'
+import type { Chain, Pt, RegionShape, ShadeProperty } from './types'
 
-interface FlowFieldProps {
+export interface FieldShock {
+  /** 1-based shock index. */
+  readonly index: number
+  readonly from: Pt
+  readonly to: Pt
+  /** Optional angle label drawn near the shock's start, e.g. "29.3° to cowl". */
+  readonly label?: string
+}
+
+/** Where the chain stopped, with a short label (the full explanation is a notice outside the drawing). */
+export interface FieldStop {
+  readonly at: Pt
+  readonly text: string
+}
+
+interface InletFieldProps {
   readonly label: string
-  readonly geometry: InletGeometry
+  readonly bounds: { readonly x0: number; readonly x1: number; readonly y1: number }
+  /** Lower wall polyline from the lead-in to the end; the solid is filled below it. */
+  readonly lowerWall: readonly Pt[]
+  /** Upper wall (cowl) polyline; the solid is filled above it to the top. */
+  readonly upperWall?: readonly Pt[]
+  readonly regions: readonly RegionShape[]
   readonly chain: Chain
-  readonly ramps: readonly Ramp[]
+  readonly shocks: readonly FieldShock[]
+  /** Clip the drawing at this x (a conflict the model can't represent); hatched beyond. */
+  readonly clipX: number | null
+  readonly conflictAt: Pt | null
+  readonly stop: FieldStop | null
   readonly property: ShadeProperty
   readonly domain: readonly [number, number]
   /** Highlighted shock, 1-based; null for none. */
   readonly selected: number | null
-  /** Read-only drawings (the comparison) omit the controls. */
+  /** Read-only drawings omit region buttons and shock selection. */
   readonly interactive: boolean
-  readonly maxHeight?: number
   readonly onSelectShock?: (shock: number) => void
-  readonly onCorner?: (index0: number, ramp: Ramp) => void
+  readonly maxHeight?: number
   readonly stale?: boolean
+  /** Fixed bounds while a handle is dragged, so the drawing doesn't rescale under the pointer. */
+  readonly frozenBounds?: { readonly x0: number; readonly x1: number; readonly y1: number } | null
+  /** Mode-specific controls drawn on top, in the drawing's pixel frame. */
+  readonly handles?: ((frame: Frame) => ReactNode) | undefined
+  readonly dragging?: boolean
 }
 
 /**
- * The ramps, their shocks at true absolute angles, and the regions between them shaded by a
- * chosen property. Regions are focusable buttons with a tooltip (click or Enter pins it); ramp
- * corners are sliders that drag or step the ramp's angle and length.
+ * An inlet drawing shared by both modes: walls, the regions between shocks shaded by a chosen
+ * property, the shocks, and where the chain stopped. Regions are focusable buttons with a tooltip
+ * (click or Enter pins it). Each mode adds its own handles.
  */
-export function FlowField({
+export function InletField({
   label,
-  geometry: g,
+  bounds,
+  lowerWall,
+  upperWall,
+  regions,
   chain,
-  ramps,
+  shocks,
+  clipX: clipModelX,
+  conflictAt,
+  stop,
   property,
   domain,
   selected,
   interactive,
-  maxHeight = 340,
   onSelectShock,
-  onCorner,
+  maxHeight = 340,
   stale = false,
-}: FlowFieldProps) {
+  frozenBounds = null,
+  handles,
+  dragging = false,
+}: InletFieldProps) {
   const id = useId()
   const theme = useDocumentTheme()
   const [ref, available] = useElementWidth<HTMLDivElement>()
   const [hovered, setHovered] = useState<number | null>(null)
   const [focused, setFocused] = useState<number | null>(null)
   const [pinned, setPinned] = useState<number | null>(null)
-  const [dragging, setDragging] = useState<number | null>(null)
-  const f = fieldFrame(g.bounds, available, maxHeight)
+  const f = fieldFrame(frozenBounds ?? bounds, available, maxHeight)
 
   const P = (p: Pt) => `${f.toX(p.x).toFixed(1)},${f.toY(p.y).toFixed(1)}`
   const path = (pts: readonly Pt[]) => `M${pts.map(P).join('L')}Z`
-  const clipX = g.conflict === null ? null : f.toX(g.conflict.at.x)
+  const clipX = clipModelX === null ? null : f.toX(clipModelX)
   const clip = `${id}-clip`
   const hatch = `${id}-hatch`
   const shown = hovered ?? focused ?? pinned
   const shownRegion = chain.regions.find((r) => r.index === shown)
-  const shownShape = g.regions.find((r) => r.index === shown)
-  const stopLabel = chain.shocks.at(-1)?.kind === 'subsonic' ? 'subsonic' : 'detached'
-
-  const body = [
-    { x: g.bounds.x0, y: 0 },
-    ...g.corners,
-    { x: g.bounds.x1, y: f.toModel(0, f.floorY).y },
-    { x: g.bounds.x0, y: f.toModel(0, f.floorY).y },
-  ]
+  const shownShape = regions.find((r) => r.index === shown)
+  const floor = f.toModel(0, f.floorY).y
+  const top = f.toModel(0, 0).y
+  const first = lowerWall[0]
+  const last = lowerWall[lowerWall.length - 1]
+  const lowerBody =
+    first === undefined || last === undefined
+      ? []
+      : [...lowerWall, { x: last.x, y: floor }, { x: first.x, y: floor }]
+  const cowlFirst = upperWall?.[0]
+  const cowlLast = upperWall?.[upperWall.length - 1]
+  const upperBody =
+    upperWall === undefined || cowlFirst === undefined || cowlLast === undefined
+      ? null
+      : [...upperWall, { x: cowlLast.x, y: top }, { x: cowlFirst.x, y: top }]
 
   function togglePin(index: number) {
     setPinned((p) => (p === index ? null : index))
-  }
-
-  function cornerPointer(e: PointerEvent<SVGCircleElement>, index0: number) {
-    const svg = e.currentTarget.ownerSVGElement
-    const previous = g.corners[index0]
-    if (svg === null || previous === undefined || onCorner === undefined) return
-    const box = svg.getBoundingClientRect()
-    const point = f.toModel(e.clientX - box.left, e.clientY - box.top)
-    onCorner(index0, cornerFromPointer(previous, wallAngleBefore(ramps, index0), point))
-  }
-
-  function cornerKey(e: KeyboardEvent<SVGCircleElement>, index0: number) {
-    const ramp = ramps[index0]
-    if (ramp === undefined || onCorner === undefined) return
-    const next = nudgeCorner(ramp, e.key, e.shiftKey)
-    if (next === null) return
-    e.preventDefault()
-    onCorner(index0, next)
   }
 
   return (
@@ -103,7 +123,7 @@ export function FlowField({
         width={f.width}
         height={f.height}
         viewBox={`0 0 ${f.width} ${f.height}`}
-        className={cn('block max-w-full touch-none select-none', dragging !== null && 'dragging')}
+        className={cn('block max-w-full touch-none select-none', dragging && 'dragging')}
       >
         <defs>
           <clipPath id={clip}>
@@ -115,7 +135,7 @@ export function FlowField({
         </defs>
 
         <g clipPath={`url(#${clip})`}>
-          {g.regions.map((shape) => {
+          {regions.map((shape) => {
             const region = chain.regions.find((r) => r.index === shape.index)
             if (region === undefined) return null
             const fill = shadeColor(shadeValue(region, property), domain, theme)
@@ -158,10 +178,15 @@ export function FlowField({
           </g>
         )}
 
-        <path d={path(body)} fill="var(--rule)" stroke="var(--muted)" strokeWidth={1} aria-hidden="true" />
+        {lowerBody.length === 0 ? null : (
+          <path d={path(lowerBody)} fill="var(--rule)" stroke="var(--muted)" strokeWidth={1} aria-hidden="true" />
+        )}
+        {upperBody === null ? null : (
+          <path d={path(upperBody)} fill="var(--rule)" stroke="var(--muted)" strokeWidth={1} aria-hidden="true" />
+        )}
 
         <g clipPath={`url(#${clip})`} aria-hidden="true">
-          {g.shocks.map((s) => (
+          {shocks.map((s) => (
             <g key={s.index}>
               <line
                 x1={f.toX(s.from.x)}
@@ -184,11 +209,23 @@ export function FlowField({
                   onClick={() => onSelectShock(s.index)}
                 />
               ) : null}
+              {s.label === undefined ? null : (
+                <text
+                  x={f.toX(s.from.x + (s.to.x - s.from.x) * 0.5) + 6}
+                  y={f.toY(s.from.y + (s.to.y - s.from.y) * 0.5)}
+                  className="num fill-ink text-[10px]"
+                  stroke="var(--panel)"
+                  strokeWidth={3}
+                  paintOrder="stroke"
+                >
+                  {s.label}
+                </text>
+              )}
             </g>
           ))}
         </g>
 
-        {g.regions.map((shape) => {
+        {regions.map((shape) => {
           const region = chain.regions.find((r) => r.index === shape.index)
           const x = f.toX(shape.label.x)
           if (region === undefined || (clipX !== null && x > clipX)) return null
@@ -209,69 +246,30 @@ export function FlowField({
           )
         })}
 
-        {g.conflict === null ? null : (
-          <circle
-            cx={f.toX(g.conflict.at.x)}
-            cy={f.toY(g.conflict.at.y)}
-            r={6}
-            fill="none"
-            stroke="var(--danger)"
-            strokeWidth={2}
-            aria-hidden="true"
-          />
+        {conflictAt === null ? null : (
+          <circle cx={f.toX(conflictAt.x)} cy={f.toY(conflictAt.y)} r={6} fill="none" stroke="var(--danger)" strokeWidth={2} aria-hidden="true" />
         )}
 
-        {g.detachedCorner === null ? null : (
+        {stop === null ? null : (
           <g aria-hidden="true">
             <path
-              d={`M${f.toX(g.detachedCorner.x) - 10},${f.toY(g.detachedCorner.y)} q-12,-28 4,-56`}
+              d={`M${f.toX(stop.at.x) - 10},${f.toY(stop.at.y)} q-12,-28 4,-56`}
               fill="none"
               stroke="var(--down)"
               strokeWidth={2}
               strokeDasharray="4 3"
             />
-            <text x={f.toX(g.detachedCorner.x) - 14} y={f.toY(g.detachedCorner.y) - 62} className="fill-down text-[11px]">
-              {stopLabel}
+            <text
+              x={Math.min(Math.max(f.toX(stop.at.x) - 14, 2), f.width - 96)}
+              y={Math.max(f.toY(stop.at.y) - 62, 12)}
+              className="fill-down text-[11px]"
+            >
+              {stop.text}
             </text>
           </g>
         )}
 
-        {interactive && onCorner !== undefined
-          ? ramps.map((ramp, i) => {
-              const c = g.corners[i + 1]
-              if (c === undefined) return null
-              return (
-                <circle
-                  key={i}
-                  cx={f.toX(c.x)}
-                  cy={f.toY(c.y)}
-                  r={7}
-                  role="slider"
-                  tabIndex={0}
-                  aria-label={`Ramp ${i + 1} corner`}
-                  aria-valuemin={0}
-                  aria-valuemax={45}
-                  aria-valuenow={ramp.thetaDeg}
-                  aria-valuetext={`Ramp ${i + 1}: ${formatValue(ramp.thetaDeg, 4)}°, length ${formatValue(ramp.length, 3)}`}
-                  className="glide cursor-grab fill-panel stroke-up outline-none [stroke-width:2] focus-visible:stroke-[var(--ring)] focus-visible:[stroke-width:3]"
-                  onPointerDown={(e) => {
-                    if (e.button !== 0) return
-                    e.currentTarget.setPointerCapture(e.pointerId)
-                    setDragging(i)
-                  }}
-                  onPointerMove={(e) => {
-                    if (dragging === i) cornerPointer(e, i)
-                  }}
-                  onPointerUp={(e) => {
-                    if (e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId)
-                    setDragging(null)
-                  }}
-                  onPointerCancel={() => setDragging(null)}
-                  onKeyDown={(e) => cornerKey(e, i)}
-                />
-              )
-            })
-          : null}
+        {handles?.(f)}
       </svg>
 
       {shownRegion !== undefined && shownShape !== undefined ? (

@@ -5,12 +5,11 @@
  * ramp, inside that area are flagged: this simple model can't represent the flow beyond them.
  */
 
-import type { Chain, Ramp } from './model'
+import type { Pt, RegionShape } from '../shared/types'
+import type { Chain, Ramp } from '@/features/inlet/ramps/model'
 
-export interface Pt {
-  readonly x: number
-  readonly y: number
-}
+export type { Pt, RegionShape } from '../shared/types'
+
 
 export interface ShockLine {
   /** 1-based ramp index. */
@@ -28,12 +27,6 @@ export interface Conflict {
   readonly at: Pt
 }
 
-export interface RegionShape {
-  readonly index: number
-  readonly polygon: readonly Pt[]
-  /** A point inside the region, near its wall, for the region number. */
-  readonly label: Pt
-}
 
 export interface InletGeometry {
   readonly corners: readonly Pt[]

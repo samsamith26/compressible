@@ -2,7 +2,7 @@
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react'
 import { afterEach, describe, expect, it } from 'vitest'
 import { CALCULATORS } from '@/hooks/useCalculatorTab'
-import { InletCalculator } from '../InletCalculator'
+import { InletCalculator } from '@/features/inlet/InletCalculator'
 
 // jsdom has no layout engine: charts size themselves with ResizeObserver.
 if (!('ResizeObserver' in globalThis)) {

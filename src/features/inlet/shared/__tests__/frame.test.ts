@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { fieldFrame } from '../frame'
+import { fieldFrame } from '@/features/inlet/shared/frame'
 
 describe('fieldFrame', () => {
   const bounds = { x0: -0.3, x1: 1.93, y1: 0.93 }

@@ -19,7 +19,7 @@ import {
   type InletField,
   type InletSolution,
   type ShadeProperty,
-} from './model'
+} from '@/features/inlet/ramps/model'
 
 const KEY_M1 = 'in.m'
 const KEY_THETAS = 'in.t'
@@ -45,7 +45,7 @@ function replaceAt(items: readonly string[], index0: number, text: string): stri
   return items.map((t, i) => (i === index0 ? text : t))
 }
 
-export interface Inlet {
+export interface RampsState {
   readonly gamma: ReturnType<typeof useGamma>
   readonly m1Text: string
   readonly thetaTexts: readonly string[]
@@ -71,7 +71,7 @@ export interface Inlet {
   readonly select: (shock: number) => void
 }
 
-export function useInlet(): Inlet {
+export function useRamps(): RampsState {
   const [params, update] = useSearchParams()
   const gamma = useGamma()
   const m1Text = params.get(KEY_M1) ?? '3'

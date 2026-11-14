@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { addRampTexts, clampSelection, parseList, removeRampTexts, solveInletText } from '../model'
+import { addRampTexts, clampSelection, parseList, removeRampTexts, solveInletText } from '@/features/inlet/ramps/model'
 
 const DEFAULT_TEXT = { gamma: '1.4', m1: '3', thetas: ['8', '8', '8'], lengths: ['1', '0.6', '0.4'] }
 

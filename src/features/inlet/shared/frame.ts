@@ -1,4 +1,4 @@
-import type { Pt } from './geometry'
+import type { Pt } from '@/features/inlet/shared/types'
 
 /** Pixel mapping for a flow-field drawing: equal x and y scale, y flipped, the wall body below. */
 export interface Frame {

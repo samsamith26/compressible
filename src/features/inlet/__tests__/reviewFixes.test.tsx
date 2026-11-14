@@ -1,9 +1,9 @@
 // @vitest-environment jsdom
 import { act, cleanup, render, renderHook, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it } from 'vitest'
-import { InletCalculator } from '../InletCalculator'
-import { parseList, solveChain, solveInletText } from '../model'
-import { useInlet } from '../useInlet'
+import { InletCalculator } from '@/features/inlet/InletCalculator'
+import { parseList, solveChain, solveInletText } from '@/features/inlet/ramps/model'
+import { useRamps } from '@/features/inlet/ramps/useRamps'
 
 if (!('ResizeObserver' in globalThis)) {
   Object.defineProperty(globalThis, 'ResizeObserver', {
@@ -22,7 +22,7 @@ afterEach(() => {
 
 const at = (search: string) => {
   window.history.replaceState(null, '', `/${search}`)
-  return renderHook(() => useInlet())
+  return renderHook(() => useRamps())
 }
 const param = (key: string) => new URLSearchParams(window.location.search).get(key)
 

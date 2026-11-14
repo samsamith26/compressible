@@ -1,6 +1,6 @@
 import { formatValue } from '@/lib/format'
-import type { Conflict } from './geometry'
-import type { ShockLink } from './model'
+import type { Conflict } from '@/features/inlet/ramps/geometry'
+import type { ShockLink } from '@/features/inlet/ramps/model'
 
 /** The drawing stops at the first crossing: the simple chain model can't represent what follows. */
 export function ConflictNotice({ conflict }: { readonly conflict: Conflict }) {

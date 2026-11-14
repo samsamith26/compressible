@@ -1,7 +1,7 @@
 /** Ramp corners as controls: pointer position or arrow keys → that ramp's angle and length. */
 
-import type { Pt } from './geometry'
-import type { Ramp } from './model'
+import type { Pt } from '@/features/inlet/ramps/geometry'
+import type { Ramp } from '@/features/inlet/ramps/model'
 
 const THETA_MAX = 45
 const LENGTH_MIN = 0.05

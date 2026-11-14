@@ -8,14 +8,16 @@ import {
   maxDeflection,
   ok,
   solveOblique,
-  type MaxDeflection,
-  type ObliqueShockState,
-  type ObliqueSolution,
+      type ObliqueSolution,
   type Result,
 } from '@/physics'
+import type { Chain, Region, ShockLink } from '../shared/types'
 import { attribute, parseField, type FieldResult } from '@/lib/fields'
 import { toQueryNumber } from '@/lib/format'
 import { parseNumber } from '@/lib/parseNumber'
+
+export type { Chain, Region, ShockLink, ShadeProperty } from '../shared/types'
+export { SHADE_PROPERTIES } from '../shared/types'
 
 export interface Ramp {
   /** This ramp's additional turning angle. */
@@ -24,45 +26,9 @@ export interface Ramp {
   readonly length: number
 }
 
-export interface Region {
-  /** 1-based. Region 1 is the freestream; region i+1 lies behind shock i. */
-  readonly index: number
-  readonly mach: number
-  /** Wave angle of the shock that created this region; null for the freestream. */
-  readonly betaDeg: number | null
-  /** The turn applied by the ramp under this region (0 for the freestream). */
-  readonly thetaLocalDeg: number
-  /** Wall angle under this region: the sum of turns so far. */
-  readonly thetaCumDeg: number
-  readonly pP1: number
-  readonly rhoRho1: number
-  readonly tT1: number
-  readonly p0P01: number
-}
 
-interface ShockCore {
-  /** 1-based ramp index. */
-  readonly index: number
-  readonly upstreamMach: number
-  readonly thetaDeg: number
-}
 
-/**
- * One ramp's shock. `detached`: θ exceeds θmax for the incoming Mach number. `subsonic`: the
- * region before this ramp is already subsonic (a weak shock just under θmax can leave M < 1), so
- * no oblique shock can form. Either ends the chain.
- */
-export type ShockLink =
-  | (ShockCore & { readonly kind: 'attached'; readonly state: ObliqueShockState; readonly max: MaxDeflection })
-  | (ShockCore & { readonly kind: 'detached'; readonly max: MaxDeflection })
-  | (ShockCore & { readonly kind: 'subsonic' })
 
-export interface Chain {
-  readonly regions: readonly Region[]
-  readonly shocks: readonly ShockLink[]
-  /** 1-based index of the ramp where the chain stopped (detached or subsonic), or null if it didn't. */
-  readonly detachedAt: number | null
-}
 
 export const MAX_RAMPS = 4
 
@@ -72,7 +38,7 @@ export const DEFAULT_RAMPS: readonly Ramp[] = [
   { thetaDeg: 8, length: 0.4 },
 ]
 
-const FREESTREAM = { betaDeg: null, thetaLocalDeg: 0, thetaCumDeg: 0, pP1: 1, rhoRho1: 1, tT1: 1, p0P01: 1 }
+const FREESTREAM = { betaDeg: null, thetaLocalDeg: 0, flowDeg: 0, pP1: 1, rhoRho1: 1, tT1: 1, p0P01: 1 }
 
 /**
  * Chain weak oblique shocks across the ramps. Shock i uses region i as its upstream state; region
@@ -106,7 +72,7 @@ export function solveChain(m1: number, ramps: readonly Ramp[], gamma: number): R
       mach: s.m2,
       betaDeg: s.betaDeg,
       thetaLocalDeg: ramp.thetaDeg,
-      thetaCumDeg: up.thetaCumDeg + ramp.thetaDeg,
+      flowDeg: up.flowDeg + ramp.thetaDeg,
       pP1: up.pP1 * s.p2P1,
       rhoRho1: up.rhoRho1 * s.rho2Rho1,
       tT1: up.tT1 * s.t2T1,
@@ -147,8 +113,6 @@ export interface InletSolution {
   readonly single: ObliqueSolution
 }
 
-export type ShadeProperty = 'M' | 'p' | 'T' | 'p0'
-export const SHADE_PROPERTIES: readonly ShadeProperty[] = ['M', 'p', 'T', 'p0']
 
 export const DEFAULT_THETA_TEXTS: readonly string[] = DEFAULT_RAMPS.map((r) => String(r.thetaDeg))
 export const DEFAULT_LENGTH_TEXTS: readonly string[] = DEFAULT_RAMPS.map((r) => String(r.length))

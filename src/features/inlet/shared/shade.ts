@@ -6,7 +6,7 @@
 
 import { contrastRatio } from '@/lib/contrast'
 import type { Theme } from '@/lib/theme'
-import type { Region, ShadeProperty } from './model'
+import type { Region, ShadeProperty } from '@/features/inlet/shared/types'
 
 export const SHADE_STOPS: Readonly<Record<Theme, readonly [string, string]>> = {
   light: ['#8fb0e0', '#1b4383'],
