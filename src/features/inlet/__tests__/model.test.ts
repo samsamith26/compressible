@@ -65,7 +65,7 @@ describe('solveChain', () => {
     const second = chain.shocks[1]
     expect(second?.kind).toBe('detached')
     expect(second?.upstreamMach).toBeCloseTo(1.4457, 4)
-    expect(second?.max.thetaMaxDeg).toBeCloseTo(10.67, 2)
+    expect(second?.kind === 'detached' && second.max.thetaMaxDeg).toBeCloseTo(10.67, 2)
   })
 
   it('treats θ = 0 as a Mach wave with no change', () => {

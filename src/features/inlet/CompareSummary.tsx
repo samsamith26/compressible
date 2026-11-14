@@ -9,10 +9,23 @@ interface CompareSummaryProps {
   readonly single: ObliqueSolution
   readonly m1: number
   readonly totalTurnDeg: number
+  /** Ramp where the chain stopped (detached or subsonic), or null. */
+  readonly stoppedAt: number | null
+  /** Turning achieved before the chain stopped. */
+  readonly turnedDeg: number
 }
 
 /** Final state of the chain beside the single-shock case, with the recovery gained. */
-export function CompareSummary({ final, rampCount, single, m1, totalTurnDeg }: CompareSummaryProps) {
+export function CompareSummary({ final, rampCount, single, m1, totalTurnDeg, stoppedAt, turnedDeg }: CompareSummaryProps) {
+  if (stoppedAt !== null) {
+    return (
+      <p role="status" className="px-4 py-3 text-sm text-ink">
+        The chain stops at ramp {stoppedAt} after turning {plain(turnedDeg)}° of {plain(totalTurnDeg)}°, so it can’t be
+        compared like for like with a single {plain(totalTurnDeg)}° turn. Its recovery so far is p₀/p₀₁ ={' '}
+        <span className="num">{formatValue(final.p0P01)}</span>.
+      </p>
+    )
+  }
   if (single.kind === 'detached') {
     return (
       <p role="status" className="px-4 py-3 text-sm text-ink">

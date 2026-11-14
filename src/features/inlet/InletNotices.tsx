@@ -18,6 +18,20 @@ export function ConflictNotice({ conflict }: { readonly conflict: Conflict }) {
   )
 }
 
+/** A weak shock just under θmax can leave subsonic flow; the next ramp can't form an oblique shock. */
+export function SubsonicRampNotice({ shock }: { readonly shock: Extract<ShockLink, { kind: 'subsonic' }> }) {
+  return (
+    <div role="status" className="border-l-2 border-down bg-down/8 px-4 py-3 text-sm leading-relaxed">
+      <p className="font-medium text-down">The flow is subsonic before ramp {shock.index}</p>
+      <p className="text-ink">
+        Shock {shock.index - 1} leaves M = <span className="num">{formatValue(shock.upstreamMach, 4)}</span>, so ramp{' '}
+        {shock.index} can’t form an oblique shock. The chain stops here: regions beyond ramp {shock.index - 1} aren’t
+        computed.
+      </p>
+    </div>
+  )
+}
+
 /** A detached ramp ends the chain. Detachment is information (amber), not an error. */
 export function DetachedRampNotice({ shock }: { readonly shock: Extract<ShockLink, { kind: 'detached' }> }) {
   return (

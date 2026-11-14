@@ -13,7 +13,8 @@ describe('parseList (Review Focus 1)', () => {
   it('falls back when the list is missing or has the wrong number of entries', () => {
     expect(parseList(null, fallback)).toEqual(fallback)
     expect(parseList('1,2,3,4,5', fallback)).toEqual(fallback)
-    expect(parseList('', fallback)).toEqual(fallback)
+    // An empty value is one ramp whose field was cleared, not a missing list.
+    expect(parseList('', fallback)).toEqual([''])
   })
 })
 

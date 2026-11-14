@@ -15,6 +15,8 @@ interface RecoveryChartProps {
   /** The single-shock comparison, when shown and attached. */
   readonly single: readonly RecoveryStep[] | null
   readonly rampCount: number
+  /** Shocks actually solved; fewer than `rampCount` when the chain stopped early. */
+  readonly completed: number
   readonly totalTurnDeg: number
   readonly stale: boolean
 }
@@ -37,7 +39,8 @@ function stepPath(steps: readonly RecoveryStep[], x: (s: number) => number, y: (
  * single-shock case as a second series. Direct labels name both final values; each station is a
  * focusable point with its value.
  */
-export function RecoveryChart({ steps, single, rampCount, totalTurnDeg, stale }: RecoveryChartProps) {
+export function RecoveryChart({ steps, single, rampCount, completed, totalTurnDeg, stale }: RecoveryChartProps) {
+  const chainName = completed < rampCount ? `${completed} of ${rampCount} ramps` : `${rampCount} ramp${rampCount === 1 ? '' : 's'}`
   const [ref, width] = useElementWidth<HTMLDivElement>()
   const [active, setActive] = useState<number | null>(null)
   const w = Math.max(width, 300)
@@ -69,7 +72,7 @@ export function RecoveryChart({ steps, single, rampCount, totalTurnDeg, stale }:
           <path d={stepPath(steps, x, y, end)} fill="none" stroke="var(--up)" strokeWidth={2.5} aria-hidden="true" />
           {finalMulti === undefined ? null : (
             <text x={x(end) + 6} y={y(finalMulti.p0P01)} dy="0.32em" className="num fill-ink text-[11px]">
-              {rampCount} ramp{rampCount === 1 ? '' : 's'} {formatValue(finalMulti.p0P01, 3)}
+              {chainName} {formatValue(finalMulti.p0P01, 3)}
             </text>
           )}
           {finalSingle === undefined ? null : (
@@ -108,7 +111,7 @@ export function RecoveryChart({ steps, single, rampCount, totalTurnDeg, stale }:
       )}
       <ul className="flex flex-wrap gap-x-4 gap-y-1 px-1 text-xs text-muted" aria-label="Legend">
         <li className="flex items-center gap-1.5">
-          <span aria-hidden="true" className="inline-block h-0.5 w-5 bg-up" /> {rampCount} ramp{rampCount === 1 ? '' : 's'}
+          <span aria-hidden="true" className="inline-block h-0.5 w-5 bg-up" /> {chainName}
         </li>
         {single === null ? null : (
           <li className="flex items-center gap-1.5">

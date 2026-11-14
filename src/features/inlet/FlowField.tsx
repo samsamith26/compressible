@@ -64,6 +64,7 @@ export function FlowField({
   const shown = hovered ?? focused ?? pinned
   const shownRegion = chain.regions.find((r) => r.index === shown)
   const shownShape = g.regions.find((r) => r.index === shown)
+  const stopLabel = chain.shocks.at(-1)?.kind === 'subsonic' ? 'subsonic' : 'detached'
 
   const body = [
     { x: g.bounds.x0, y: 0 },
@@ -230,7 +231,7 @@ export function FlowField({
               strokeDasharray="4 3"
             />
             <text x={f.toX(g.detachedCorner.x) - 14} y={f.toY(g.detachedCorner.y) - 62} className="fill-down text-[11px]">
-              detached
+              {stopLabel}
             </text>
           </g>
         )}

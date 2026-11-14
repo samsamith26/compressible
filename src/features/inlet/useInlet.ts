@@ -8,6 +8,7 @@ import { toQueryNumber } from '@/lib/format'
 import { readEnum } from '@/lib/query'
 import {
   addRampTexts,
+  alignLengths,
   clampSelection,
   DEFAULT_LENGTH_TEXTS,
   DEFAULT_THETA_TEXTS,
@@ -37,7 +38,7 @@ const DEFAULT_SOLUTION = defaultSolution()
 
 /** List entries are comma-separated in the URL, so a typed decimal comma is stored as a point. */
 function encodeList(items: readonly string[]): string {
-  return items.map((t) => t.replace(',', '.')).join(',')
+  return items.map((t) => t.replaceAll(',', '.')).join(',')
 }
 
 function replaceAt(items: readonly string[], index0: number, text: string): string[] {
@@ -75,7 +76,7 @@ export function useInlet(): Inlet {
   const gamma = useGamma()
   const m1Text = params.get(KEY_M1) ?? '3'
   const thetaTexts = parseList(params.get(KEY_THETAS), DEFAULT_THETA_TEXTS)
-  const lengthTexts = parseList(params.get(KEY_LENGTHS), DEFAULT_LENGTH_TEXTS)
+  const lengthTexts = alignLengths(thetaTexts, parseList(params.get(KEY_LENGTHS), DEFAULT_LENGTH_TEXTS))
   const thetaKey = thetaTexts.join(',')
   const lengthKey = lengthTexts.join(',')
 
@@ -111,8 +112,8 @@ export function useInlet(): Inlet {
       }),
     setThetaFromBeta: (i, betaDeg) => {
       const shock = solution.chain.shocks[i]
-      if (shock === undefined) return
-      const theta = thetaFromBetaDeg(shock.upstreamMach, betaDeg, gamma.value)
+      if (shock === undefined || shock.kind === 'subsonic') return
+      const theta = thetaFromBetaDeg(shock.upstreamMach, betaDeg, solution.gamma)
       const clamped = Math.min(Math.max(theta, 0), shock.max.thetaMaxDeg)
       update({ [KEY_THETAS]: encodeList(replaceAt(thetaTexts, i, toQueryNumber(clamped, 4))) })
     },

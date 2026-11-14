@@ -22,7 +22,7 @@ export function RampEditor({ thetaTexts, lengthTexts, error, onTheta, onLength, 
       <legend className="mb-1 text-sm font-medium">Ramps</legend>
       {thetaTexts.map((theta, i) => {
         const n = i + 1
-        const sliderValue = Math.min(30, Math.max(0, parseNumber(theta) ?? 0))
+        const sliderValue = Math.min(45, Math.max(0, parseNumber(theta) ?? 0))
         return (
           <div key={n} className="grid gap-1 rounded-md border border-rule p-2.5">
             <div className="grid grid-cols-2 gap-2">
@@ -43,7 +43,7 @@ export function RampEditor({ thetaTexts, lengthTexts, error, onTheta, onLength, 
               <input
                 type="range"
                 min={0}
-                max={30}
+                max={45}
                 step={0.5}
                 value={sliderValue}
                 onChange={(e) => onTheta(i, e.target.value)}

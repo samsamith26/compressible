@@ -40,22 +40,27 @@ export interface Region {
   readonly p0P01: number
 }
 
-interface ShockBase {
+interface ShockCore {
   /** 1-based ramp index. */
   readonly index: number
   readonly upstreamMach: number
   readonly thetaDeg: number
-  readonly max: MaxDeflection
 }
 
+/**
+ * One ramp's shock. `detached`: θ exceeds θmax for the incoming Mach number. `subsonic`: the
+ * region before this ramp is already subsonic (a weak shock just under θmax can leave M < 1), so
+ * no oblique shock can form. Either ends the chain.
+ */
 export type ShockLink =
-  | (ShockBase & { readonly kind: 'attached'; readonly state: ObliqueShockState })
-  | (ShockBase & { readonly kind: 'detached' })
+  | (ShockCore & { readonly kind: 'attached'; readonly state: ObliqueShockState; readonly max: MaxDeflection })
+  | (ShockCore & { readonly kind: 'detached'; readonly max: MaxDeflection })
+  | (ShockCore & { readonly kind: 'subsonic' })
 
 export interface Chain {
   readonly regions: readonly Region[]
   readonly shocks: readonly ShockLink[]
-  /** 1-based index of the first detached shock, or null when every shock is attached. */
+  /** 1-based index of the ramp where the chain stopped (detached or subsonic), or null if it didn't. */
   readonly detachedAt: number | null
 }
 
@@ -82,6 +87,11 @@ export function solveChain(m1: number, ramps: readonly Ramp[], gamma: number): R
   for (const [i, ramp] of ramps.entries()) {
     const up = regions[i]
     if (up === undefined) break
+    // Behind a shock only: a subsonic freestream is an input error, reported by solveOblique below.
+    if (i > 0 && !(up.mach > 1)) {
+      shocks.push({ kind: 'subsonic', index: i + 1, upstreamMach: up.mach, thetaDeg: ramp.thetaDeg })
+      return ok({ regions, shocks, detachedAt: i + 1 })
+    }
     const r = solveOblique(up.mach, { kind: 'thetaWeak', value: ramp.thetaDeg }, gamma)
     if (!r.ok) return r
     const base = { index: i + 1, upstreamMach: up.mach, thetaDeg: ramp.thetaDeg, max: r.value.max }
@@ -129,6 +139,8 @@ export interface InletText {
 
 export interface InletSolution {
   readonly m1: number
+  /** The γ this solution was solved with (it can differ from the γ field while that is mid-edit). */
+  readonly gamma: number
   readonly ramps: readonly Ramp[]
   readonly chain: Chain
   /** One shock through the total turning angle, from the same M₁. */
@@ -143,7 +155,7 @@ export const DEFAULT_LENGTH_TEXTS: readonly string[] = DEFAULT_RAMPS.map((r) => 
 
 /** A comma-separated URL list with 1–4 entries, kept as typed; anything else falls back. */
 export function parseList(text: string | null, fallback: readonly string[]): string[] {
-  if (text === null || text === '') return [...fallback]
+  if (text === null) return [...fallback]
   const items = text.split(',')
   return items.length >= 1 && items.length <= MAX_RAMPS ? items : [...fallback]
 }
@@ -177,7 +189,7 @@ export function solveInletText(t: InletText): FieldResult<InletSolution, InletFi
   if (!chain.ok) return attribute(chain, 'm1')
   const single = compareSingle(m1.value, ramps, gamma.value)
   if (!single.ok) return attribute(single, 'm1')
-  return { ok: true, value: { m1: m1.value, ramps, chain: chain.value, single: single.value } }
+  return { ok: true, value: { m1: m1.value, gamma: gamma.value, ramps, chain: chain.value, single: single.value } }
 }
 
 /** Append a ramp: 8°, at 0.7× the previous length (or 1 if that isn't a number). No-op at four. */
@@ -189,6 +201,13 @@ export function addRampTexts(
   const previous = parseNumber(lengths[lengths.length - 1] ?? '')
   const length = previous !== null && previous > 0 ? toQueryNumber(previous * 0.7, 3) : '1'
   return { thetas: [...thetas, '8'], lengths: [...lengths, length] }
+}
+
+/** Lengths matched to the angles: missing ones are filled the way "Add ramp" fills them. */
+export function alignLengths(thetas: readonly string[], lengths: readonly string[]): string[] {
+  let aligned = lengths.slice(0, thetas.length)
+  while (aligned.length < thetas.length) aligned = addRampTexts(aligned, aligned).lengths
+  return aligned
 }
 
 /** Remove ramp `index0` (0-based) from both lists. The last remaining ramp can't be removed. */

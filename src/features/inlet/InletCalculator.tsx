@@ -8,7 +8,7 @@ import { messageFor } from '@/lib/fields'
 import { CompareSummary } from './CompareSummary'
 import { FlowField } from './FlowField'
 import { inletGeometry } from './geometry'
-import { ConflictNotice, DetachedRampNotice } from './InletNotices'
+import { ConflictNotice, DetachedRampNotice, SubsonicRampNotice } from './InletNotices'
 import { SHADE_PROPERTIES, singleRampLayout, totalTurn, type ShadeProperty } from './model'
 import { shadeDomain, shadeValue } from './shade'
 import { ShadeLegend } from './ShadeLegend'
@@ -30,14 +30,16 @@ export function InletCalculator() {
   const s = useInlet()
   const { chain } = s.solution
   const stale = s.error !== null
-  const detached = chain.shocks.find((sh) => sh.kind === 'detached')
+  const stopped = chain.shocks.find((sh) => sh.kind !== 'attached')
   const theme = useDocumentTheme()
-  const { m1, ramps } = s.solution
+  const { m1, ramps, gamma } = s.solution
+  const completed = chain.shocks.filter((sh) => sh.kind === 'attached').length
+  const final = chain.regions.at(-1)
   const geometry = useMemo(() => inletGeometry(chain, ramps), [chain, ramps])
   const single = useMemo(() => {
-    const layout = singleRampLayout(m1, ramps, s.gamma.value)
+    const layout = singleRampLayout(m1, ramps, gamma)
     return layout === null ? null : { ...layout, geometry: inletGeometry(layout.chain, layout.ramps) }
-  }, [m1, ramps, s.gamma.value])
+  }, [m1, ramps, gamma])
   const showSingle = s.compare && single !== null
   const domain = shadeDomain(
     chain.regions.map((r) => shadeValue(r, s.property)),
@@ -99,7 +101,8 @@ export function InletCalculator() {
         </p>
       }
     >
-      {detached?.kind === 'detached' ? <DetachedRampNotice shock={detached} /> : null}
+      {stopped?.kind === 'detached' ? <DetachedRampNotice shock={stopped} /> : null}
+      {stopped?.kind === 'subsonic' ? <SubsonicRampNotice shock={stopped} /> : null}
       {geometry.conflict === null ? null : <ConflictNotice conflict={geometry.conflict} />}
       <Panel title="Flow field" caption={<ShadeLegend property={s.property} domain={domain} theme={theme} />}>
         <div className={showSingle ? 'grid gap-4 p-3 md:grid-cols-[3fr_2fr] md:items-end' : 'p-3'}>
@@ -146,18 +149,21 @@ export function InletCalculator() {
             steps={recoverySteps(chain)}
             single={s.compare ? singleSteps(s.solution.single) : null}
             rampCount={ramps.length}
+            completed={completed}
             totalTurnDeg={totalTurn(ramps)}
             stale={stale}
           />
         </div>
-        {s.compare && chain.regions.at(-1) !== undefined ? (
+        {s.compare && final !== undefined ? (
           <div className="border-t border-rule">
             <CompareSummary
-              final={chain.regions.at(-1) ?? chain.regions[0]!}
+              final={final}
               rampCount={ramps.length}
               single={s.solution.single}
               m1={m1}
               totalTurnDeg={totalTurn(ramps)}
+              stoppedAt={chain.detachedAt}
+              turnedDeg={final.thetaCumDeg}
             />
           </div>
         ) : null}
@@ -168,7 +174,7 @@ export function InletCalculator() {
       <ShockDetail
         shocks={chain.shocks}
         selected={s.selected}
-        gamma={s.gamma.value}
+        gamma={gamma}
         stale={stale}
         onSelect={s.select}
         onBeta={s.setThetaFromBeta}

@@ -27,6 +27,7 @@ export function ShockDetail({ shocks, selected, gamma, stale, onSelect, onBeta }
   const shock = shocks[selected - 1] ?? shocks[0]
   if (shock === undefined) return null
   const state = shock.kind === 'attached' ? shock.state : null
+  const max = shock.kind === 'subsonic' ? null : shock.max
 
   const onKeyDown = (e: KeyboardEvent<HTMLButtonElement>) => {
     const step = e.key === 'ArrowRight' || e.key === 'ArrowDown' ? 1 : e.key === 'ArrowLeft' || e.key === 'ArrowUp' ? -1 : 0
@@ -78,6 +79,11 @@ export function ShockDetail({ shocks, selected, gamma, stale, onSelect, onBeta }
           <DetachedNotice thetaDeg={shock.thetaDeg} m1={shock.upstreamMach} max={shock.max} />
         </div>
       ) : null}
+      {max === null ? (
+        <p className="px-4 py-3 text-sm text-ink">
+          The flow reaching ramp {shock.index} is subsonic, so there is no oblique shock to show.
+        </p>
+      ) : (
       <div className="grid gap-3 p-3 2xl:grid-cols-2">
         <div className="graph-paper rounded-md px-4 py-3">
           <WedgeDiagram
@@ -92,7 +98,7 @@ export function ShockDetail({ shocks, selected, gamma, stale, onSelect, onBeta }
           <ThetaBetaChart
             m1={shock.upstreamMach}
             gamma={gamma}
-            max={shock.max}
+            max={max}
             point={state === null ? null : { thetaDeg: state.thetaDeg, betaDeg: state.betaDeg }}
             detachedThetaDeg={state === null ? shock.thetaDeg : null}
             onBeta={(beta) => onBeta(shock.index - 1, beta)}
@@ -101,6 +107,7 @@ export function ShockDetail({ shocks, selected, gamma, stale, onSelect, onBeta }
           />
         </div>
       </div>
+      )}
       {state === null ? null : (
         <div className="border-t border-rule">
           <JumpChart
