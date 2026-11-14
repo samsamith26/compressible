@@ -1,6 +1,6 @@
 # Project notes
 
-Status as of 2026-11-13. Read this before starting work; update it when the status changes.
+Status as of 2026-11-14. Read this before starting work; update it when the status changes.
 
 ## What's built
 
@@ -36,12 +36,31 @@ fix (commit 1b54870, below) was ported to this UI.
 | `src/features/isentropic/` | `model.ts`, `useIsentropicSolver`, `RatioChart` (log ratios vs M, draggable/keyboard marker) |
 | `src/features/normal-shock/` | `model.ts`, `useNormalShockSolver`, `ShockTube` (particle spacing ∝ 1/ρ) |
 | `src/features/oblique-shock/` | `model.ts`, `useObliqueSolver`, `WedgeDiagram` (attached/detached), `ThetaBetaChart` (draggable point), `thetaBeta.ts`, `wedgeGeometry.ts` |
+| `src/features/inlet/` | the multi-ramp inlet tab (below) |
 | `scripts/verify-ui.ts` | `npm run verify:ui`: Playwright checks at 1280/375px, light/dark, behaviour |
 
-URL keys: `calc` (isentropic/normal/oblique), `g` (γ, shared), `iso.k`/`iso.v`, `ns.k`/`ns.v`,
-`ob.m`/`ob.k`/`ob.v`. Field text is stored as typed, so invalid input round-trips with its error.
+**Multi-ramp inlet (fourth tab; branch `feat/multi-ramp-inlet`, PR open).**
+- **Spec and plan:** spec `docs/superpowers/specs/2026-11-13-multi-ramp-inlet-design.md`, plan `docs/superpowers/plans/2026-11-13-multi-ramp-inlet.md`.
+- **Inputs:** M₁, γ and 1–4 ramps, each with an angle and a length. The angle can be typed, slid or set by dragging the ramp's corner; the length can be typed or set by dragging.
+- **Model (pure, test-first):**
+  - `model.ts` chains weak oblique shocks through `solveOblique`. Each region is checked against a standalone call.
+  - The chain stops at a **detached** ramp, or a **subsonic** one: a shock just under θmax can leave M < 1.
+  - `geometry.ts` places corners and shocks at their true angles, builds the region polygons, and flags the first **conflict** inside the drawing (consecutive shocks crossing, or a shock meeting a later ramp).
+- **Views:**
+  - **Flow field:** shaded by M, p/p₁, T/T₁ or p₀/p₀₁ on one validated sequential hue. Regions are focusable buttons whose tooltip pins on click or Enter. Corners are sliders, and everything past a conflict is hatched "not modelled".
+  - **Regions:** a table with one row per region.
+  - **Recovery:** a stepped p₀ chart against the single-shock case, with a final-state comparison.
+  - **Shock detail:** reuses `WedgeDiagram`, `JumpChart` and `ThetaBetaChart`. Dragging the θ-β-M point edits that ramp.
+- **Default:** M₁ = 3 with three 8° ramps of lengths 1, 0.6 and 0.4 recovers p₀/p₀₁ = 0.95595, against 0.70341 for one 24° shock.
 
-**Tests:** 620 (Vitest), 100% coverage on `src/physics`. `npm run verify:ui` passes (53 checks).
+URL keys:
+- `calc` (isentropic/normal/oblique/inlet), and `g` (γ, shared).
+- `iso.k`/`iso.v`, `ns.k`/`ns.v`, `ob.m`/`ob.k`/`ob.v`.
+- `in.m`, `in.t` (angles, comma list), `in.l` (lengths), `in.prop` (`M`/`p`/`T`/`p0`), `in.cmp` (`1`/`0`), `in.sel`.
+
+Field text is stored as typed, so invalid input round-trips with its error. (In ramp lists, a typed decimal comma is stored as a point.)
+
+**Tests:** 703 (Vitest), with 100% coverage on `src/physics`, which is unchanged by the inlet. `npm run verify:ui` passes, including the inlet's layout sweep, 12 inlet behaviour checks, and a check that every calculator tab is on screen.
 In the cloud container run it as `CHROMIUM_PATH=/opt/pw-browsers/chromium npm run verify:ui`.
 
 ## Decisions
@@ -79,10 +98,21 @@ In the cloud container run it as `CHROMIUM_PATH=/opt/pw-browsers/chromium npm ru
 - **`machAngleDeg` is now exported** from `src/physics` (closes the asin(1/M) cleanup from open issue 4).
 - **Vitest processes `index.css`** (`test.css.include`) so the contrast test can read the real tokens with `?raw`.
 
+### Multi-ramp inlet
+- **Made with the user:** ramp lengths are editable per ramp (option B). The chain lives in the feature's `model.ts`, reusing the oblique components.
+- **Made by Claude (open to change):**
+  - **Lengths** are dimensionless, defaulting to 1, 0.6 and 0.4 so the default opens without a shock crossing.
+  - **Drawn area:** from the leading edge to the end of the last ramp.
+  - **Conflicts:** only the first one is flagged, and the drawing is clipped beyond it.
+  - **Corner keys:** ±0.5° and ±0.05 per arrow press, with Shift for 2° and 0.2.
+  - **Comparison:** shown by default, as a read-only single ramp on the same shading scale.
+  - **Empty lists:** an empty `in.t` means one cleared ramp, not the defaults.
+  - **Tabs on mobile:** they use 12 px text below `sm` so all four fit at 375 px.
+
 ## Open issues
 1. ~~PR not merged~~: physics and UI are merged into `main`.
 2. **Branch policy for the UI phase is undecided.** The options are a feature branch with a PR, or working directly on `main`. Ask the user.
-3. ~~No GitHub CLI~~: `gh` is installed and authenticated, so Claude can open and merge PRs. Terminals opened before the install don't have it on PATH; restart them, or call `"C:Program FilesGitHub CLIgh.exe"`.
+3. ~~No GitHub CLI~~: `gh` is installed and authenticated, so Claude can open and merge PRs. Terminals opened before the install don't have it on PATH; restart them, or call `"C:\Program Files\GitHub CLI\gh.exe"`.
 4. **Deferred minor cleanups from the code review:**
    - `solveOblique` computes θmax and validation twice for θ inputs.
    - `normalShockRaw` recomputes M2² and p2/p1 inside its log helpers.
@@ -90,6 +120,12 @@ In the cloud container run it as `CHROMIUM_PATH=/opt/pw-browsers/chromium npm ru
 6. **The VT fixtures depend on a live third-party page.** Re-recording (`npm run fixtures:vt`) needs network access and breaks if VT changes its markup. The committed JSON is the source of truth for tests.
 7. ~~Cloud push blocked~~: GitHub access was fixed and `claude/great-bell-lrkq1u` is pushed.
 8. **The D3 bundle and fonts** make the JS ~360 kB (115 kB gzipped). Fine for now; code-split per calculator if it grows.
+9. **The inlet imports components from the oblique feature,** which breaks CLAUDE.md's layering rule: `ShockDetail` uses `WedgeDiagram`, `ThetaBetaChart` and `DetachedNotice` from `src/features/oblique-shock`. This was kept deliberately, because the request asked for that reuse. Moving them into `src/components` is a separate refactor.
+10. **Deferred minors from the inlet review:**
+    - Below a 280 px container, the flow-field drawing is CSS-shrunk while corner drags assume 1:1 pixels.
+    - The shading select and the legend name properties slightly differently (`PROPERTY_NAMES` against `SHADE_NAMES`).
+    - The corner drag is hand-rolled rather than using `usePointerDrag`.
+    - `defaultSolution` duplicates `expectOk`.
 
 ## Next steps (in order)
 1. **Decisions for you:**
