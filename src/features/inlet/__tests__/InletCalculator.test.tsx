@@ -122,3 +122,25 @@ describe('InletCalculator flow field', () => {
     expect(screen.getByText(/Shaded by Mach number/)).toBeTruthy()
   })
 })
+
+describe('InletCalculator recovery and comparison', () => {
+  it('compares both recoveries and calls out the difference', () => {
+    open()
+    const chart = screen.getByRole('group', { name: /total-pressure recovery/i })
+    expect(within(chart).getByText(/3 ramps 0\.956/)).toBeTruthy()
+    expect(within(chart).getByText(/single 24° 0\.703/)).toBeTruthy()
+    expect(screen.getByText(/\+0\.253 recovered/)).toBeTruthy()
+  })
+
+  it('hides the single-shock series when comparison is off', () => {
+    open('&in.cmp=0')
+    const chart = screen.getByRole('group', { name: /total-pressure recovery/i })
+    expect(within(chart).queryByText(/single 24°/)).toBeNull()
+    expect(screen.queryByRole('group', { name: /single-shock comparison/i })).toBeNull()
+  })
+
+  it('says when the single turn would detach (Review Focus 3)', () => {
+    open('&in.t=10,10,10,10&in.l=1,0.6,0.4,0.3')
+    expect(screen.getByText(/A single 40° turn detaches at M₁ = 3 \(θmax 34\.07°\)/)).toBeTruthy()
+  })
+})

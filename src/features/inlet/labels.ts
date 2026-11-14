@@ -30,3 +30,8 @@ export function regionRows(r: Region): readonly (readonly [string, string])[] {
     ['p₀/p₀₁', formatValue(r.p0P01)],
   ]
 }
+
+/** A typed-style number for prose: 24 rather than 24.0, 34.07 rather than 34.073. */
+export function plain(x: number, sig = 4): string {
+  return String(Number(x.toPrecision(sig)))
+}

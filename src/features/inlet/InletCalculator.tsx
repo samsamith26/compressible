@@ -5,6 +5,7 @@ import { Panel } from '@/components/Panel'
 import { useMemo } from 'react'
 import { useDocumentTheme } from '@/hooks/useDocumentTheme'
 import { messageFor } from '@/lib/fields'
+import { CompareSummary } from './CompareSummary'
 import { FlowField } from './FlowField'
 import { inletGeometry } from './geometry'
 import { ConflictNotice, DetachedRampNotice } from './InletNotices'
@@ -12,6 +13,8 @@ import { SHADE_PROPERTIES, singleRampLayout, totalTurn, type ShadeProperty } fro
 import { shadeDomain, shadeValue } from './shade'
 import { ShadeLegend } from './ShadeLegend'
 import { RampEditor } from './RampEditor'
+import { RecoveryChart } from './RecoveryChart'
+import { recoverySteps, singleSteps } from './recovery'
 import { RegionTable } from './RegionTable'
 import { useInlet } from './useInlet'
 
@@ -135,6 +138,28 @@ export function InletCalculator() {
             </figure>
           ) : null}
         </div>
+      </Panel>
+      <Panel title="Total-pressure recovery" caption="p₀/p₀₁ after each shock">
+        <div className="p-3">
+          <RecoveryChart
+            steps={recoverySteps(chain)}
+            single={s.compare ? singleSteps(s.solution.single) : null}
+            rampCount={ramps.length}
+            totalTurnDeg={totalTurn(ramps)}
+            stale={stale}
+          />
+        </div>
+        {s.compare && chain.regions.at(-1) !== undefined ? (
+          <div className="border-t border-rule">
+            <CompareSummary
+              final={chain.regions.at(-1) ?? chain.regions[0]!}
+              rampCount={ramps.length}
+              single={s.solution.single}
+              m1={m1}
+              totalTurnDeg={totalTurn(ramps)}
+            />
+          </div>
+        ) : null}
       </Panel>
       <Panel title="Regions" caption="ratios relative to the freestream (region 1)">
         <RegionTable regions={chain.regions} highlight={s.selected + 1} stale={stale} />
