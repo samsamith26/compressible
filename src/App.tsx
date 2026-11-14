@@ -22,7 +22,7 @@ export function App() {
   return (
     <Tabs value={tab} onValueChange={setTab} className="flex min-h-dvh flex-col">
       <header className="sticky top-0 z-10 border-b border-rule bg-paper/85 backdrop-blur-md">
-        <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 sm:gap-6 sm:px-6">
+        <div className="mx-auto flex max-w-7xl items-center gap-2 px-4 sm:gap-6 sm:px-6">
           <Wordmark />
           <TabsList aria-label="Calculator" className="-mb-px min-w-0 flex-1">
             {CALCULATORS.map((c) => (
