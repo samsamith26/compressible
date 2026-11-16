@@ -41,7 +41,8 @@ export function ReflectField({ geometry: g, chain, input, property, domain, sele
     height: { x: 0, y: input.height },
     length: { x: x1, y: input.height },
   }
-  const value: Readonly<Record<ReflectHandle, number>> = { theta: input.thetaDeg, height: input.height, length: input.length }
+  // The channel ends where the walls meet if that comes first, so the end handle works on that length.
+  const value: Readonly<Record<ReflectHandle, number>> = { theta: input.thetaDeg, height: input.height, length: x1 }
   const set: Readonly<Record<ReflectHandle, (v: number) => void>> = { theta: onTheta, height: onHeight, length: onLength }
 
   function fromPointer(e: PointerEvent<SVGCircleElement>, f: Frame, which: ReflectHandle) {
@@ -89,7 +90,7 @@ export function ReflectField({ geometry: g, chain, input, property, domain, sele
                 role="slider"
                 tabIndex={0}
                 aria-label={HANDLES[which].name}
-                aria-valuemin={LIMITS[which].min}
+                aria-valuemin={Math.min(LIMITS[which].min, value[which])}
                 aria-valuemax={LIMITS[which].max}
                 aria-valuenow={value[which]}
                 aria-valuetext={`${formatValue(value[which], 4)}${HANDLES[which].unit}`}

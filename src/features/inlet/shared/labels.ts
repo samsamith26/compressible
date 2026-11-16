@@ -23,7 +23,7 @@ export function regionRows(r: Region): readonly (readonly [string, string])[] {
   return [
     ['M', formatValue(r.mach)],
     ['β', r.betaDeg === null ? '—' : `${formatValue(r.betaDeg, 4)}°`],
-    ['wall θ', `${formatValue(r.flowDeg, 4)}°`],
+    ['flow', `${formatValue(r.flowDeg, 4)}°`],
     ['p/p₁', formatValue(r.pP1)],
     ['ρ/ρ₁', formatValue(r.rhoRho1)],
     ['T/T₁', formatValue(r.tT1)],

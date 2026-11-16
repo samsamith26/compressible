@@ -123,5 +123,8 @@ export function nudgeReflect(which: ReflectHandle, value: number, key: string, s
   const down = key === 'ArrowDown' || key === 'ArrowLeft'
   if (!up && !down) return null
   const step = shift ? LIMITS[which].big : LIMITS[which].step
-  return Math.round(clamp(value + (up ? step : -step), which) * 1000) / 1000
+  // A typed value can sit below the handle's minimum; stepping down must never raise it.
+  const floor = Math.min(LIMITS[which].min, value)
+  const next = Math.min(LIMITS[which].max, Math.max(floor, value + (up ? step : -step)))
+  return Math.round(next * 1000) / 1000
 }

@@ -26,6 +26,8 @@ export type ReflectStop =
   | { readonly kind: 'machReflection'; readonly at: Pt; readonly upstreamMach: number; readonly thetaMaxDeg: number }
   /** θ exceeds θmax at M₁: a bow shock stands off the leading edge. */
   | { readonly kind: 'leadingEdge'; readonly thetaMaxDeg: number }
+  /** The display limit of reflections was reached before any other stop. */
+  | { readonly kind: 'shockLimit'; readonly limit: number }
   /** A shock just under θmax left subsonic flow, so no further oblique shock can form. */
   | { readonly kind: 'subsonic'; readonly at: Pt; readonly upstreamMach: number }
 
@@ -134,5 +136,5 @@ export function solveReflect(input: ReflectInput, gamma: number): Result<Reflect
     from = hit
     wall = wall === 'ramp' ? 'cowl' : 'ramp'
   }
-  return done({ kind: 'wallsMeet' }, null)
+  return done({ kind: 'shockLimit', limit: MAX_SHOCKS }, null)
 }

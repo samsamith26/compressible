@@ -11,7 +11,7 @@ import { SHADE_PROPERTIES, type ShadeProperty } from '@/features/inlet/shared/ty
 import { LIMITS } from './geometry'
 import { REFLECT_DEFAULTS, solveReflectText, type ReflectField, type ReflectState } from './text'
 
-const KEY = { m1: 'rf.m', theta: 'rf.t', height: 'rf.h', length: 'rf.l', selected: 'rf.sel' } as const
+const KEY = { m1: 'rf.m', theta: 'rf.t', height: 'rf.h', length: 'rf.l', selected: 'rf.sel', property: 'rf.prop' } as const
 
 function defaultState(): ReflectState {
   const r = solveReflectText(REFLECT_DEFAULTS)
@@ -70,7 +70,7 @@ export function useReflect(): ReflectInlet {
     lengthText,
     solution,
     error: fieldError(result),
-    property: readEnum(params, 'in.prop', SHADE_PROPERTIES, 'p0'),
+    property: readEnum(params, KEY.property, SHADE_PROPERTIES, 'p0'),
     selected: clampSelection(Number(params.get(KEY.selected) ?? '1'), shocks.length),
     setM1Text: (t) => update({ [KEY.m1]: t }),
     setThetaText: (t) => update({ [KEY.theta]: t }),
@@ -80,13 +80,15 @@ export function useReflect(): ReflectInlet {
     setHeight: write(KEY.height),
     setLength: write(KEY.length),
     setThetaFromBeta: (i, betaDeg) => {
+      // Only shock 1 maps cleanly to θ: a later shock's incoming Mach depends on θ itself.
+      if (i !== 0) return
       const shock = shocks[i]
       if (shock === undefined || shock.kind === 'subsonic') return
       const theta = thetaFromBetaDeg(shock.upstreamMach, betaDeg, solution.gamma)
       const clamped = Math.min(Math.max(theta, LIMITS.theta.min), shock.max.thetaMaxDeg, LIMITS.theta.max)
       update({ [KEY.theta]: toQueryNumber(clamped, 4) })
     },
-    setProperty: (p) => update({ 'in.prop': p }),
+    setProperty: (p) => update({ [KEY.property]: p }),
     select: (shock) => update({ [KEY.selected]: String(shock) }),
   }
 }

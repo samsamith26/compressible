@@ -5,8 +5,8 @@ import type { Region } from '@/features/inlet/shared/types'
 const COLUMNS: readonly { key: string; label: string; title: string; value: (r: Region) => number | null }[] = [
   { key: 'M', label: 'M', title: 'Mach number', value: (r) => r.mach },
   { key: 'beta', label: 'β (°)', title: 'wave angle of the shock that formed the region', value: (r) => r.betaDeg },
-  { key: 'theta', label: 'θ (°)', title: 'this ramp’s turning angle', value: (r) => (r.index === 1 ? null : r.thetaLocalDeg) },
-  { key: 'wall', label: 'wall (°)', title: 'cumulative wall angle', value: (r) => r.flowDeg },
+  { key: 'theta', label: 'θ (°)', title: 'turning angle of the shock that formed the region', value: (r) => (r.index === 1 ? null : r.thetaLocalDeg) },
+  { key: 'flow', label: 'flow (°)', title: 'flow direction, degrees above horizontal', value: (r) => r.flowDeg },
   { key: 'p', label: 'p/p₁', title: 'static pressure ratio', value: (r) => r.pP1 },
   { key: 'rho', label: 'ρ/ρ₁', title: 'density ratio', value: (r) => r.rhoRho1 },
   { key: 'T', label: 'T/T₁', title: 'temperature ratio', value: (r) => r.tT1 },

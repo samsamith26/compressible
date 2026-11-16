@@ -46,6 +46,12 @@ export function ReflectStopNotice({ stop, thetaDeg, m1, shockCount }: { readonly
           Shock {shockCount} reaches the end of the channel before the opposite wall.
         </p>
       )
+    case 'shockLimit':
+      return (
+        <p role="status" className="px-1 text-sm text-muted">
+          Stopped after {stop.limit} reflections, the most this view draws; more would form before the walls meet.
+        </p>
+      )
     case 'wallsMeet':
       return (
         <p role="status" className="px-1 text-sm text-muted">
