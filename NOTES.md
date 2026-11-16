@@ -1,6 +1,6 @@
 # Project notes
 
-Status as of 2026-11-14. Read this before starting work; update it when the status changes.
+Status as of 2026-11-16. Read this before starting work; update it when the status changes.
 
 ## What's built
 
@@ -36,10 +36,14 @@ fix (commit 1b54870, below) was ported to this UI.
 | `src/features/isentropic/` | `model.ts`, `useIsentropicSolver`, `RatioChart` (log ratios vs M, draggable/keyboard marker) |
 | `src/features/normal-shock/` | `model.ts`, `useNormalShockSolver`, `ShockTube` (particle spacing ∝ 1/ρ) |
 | `src/features/oblique-shock/` | `model.ts`, `useObliqueSolver`, `WedgeDiagram` (attached/detached), `ThetaBetaChart` (draggable point), `thetaBeta.ts`, `wedgeGeometry.ts` |
-| `src/features/inlet/` | the multi-ramp inlet tab (below) |
+| `src/features/inlet/` | the Inlet tab (below): `shared/` (both modes), `ramps/` (ramp series), `reflect/` (reflecting shocks), `InletCalculator` (mode switch) |
 | `scripts/verify-ui.ts` | `npm run verify:ui`: Playwright checks at 1280/375px, light/dark, behaviour |
 
-**Multi-ramp inlet (fourth tab; branch `feat/multi-ramp-inlet`, PR open).**
+**Inlet (fourth tab; branch `feat/multi-ramp-inlet`, PR #2 open, not merged).**
+
+The tab has two modes, chosen with a segmented control. Each mode keeps its own inputs, and the mode is mirrored to the URL. Both modes share the drawing component (`shared/InletField`), the shading select and legend, the region table, the p₀ recovery chart and the shock detail.
+
+*Ramp series* (external compression):
 - **Spec and plan:** spec `docs/superpowers/specs/2026-11-13-multi-ramp-inlet-design.md`, plan `docs/superpowers/plans/2026-11-13-multi-ramp-inlet.md`.
 - **Inputs:** M₁, γ and 1–4 ramps, each with an angle and a length. The angle can be typed, slid or set by dragging the ramp's corner; the length can be typed or set by dragging.
 - **Model (pure, test-first):**
@@ -53,14 +57,28 @@ fix (commit 1b54870, below) was ported to this UI.
   - **Shock detail:** reuses `WedgeDiagram`, `JumpChart` and `ThetaBetaChart`. Dragging the θ-β-M point edits that ramp.
 - **Default:** M₁ = 3 with three 8° ramps of lengths 1, 0.6 and 0.4 recovers p₀/p₀₁ = 0.95595, against 0.70341 for one 24° shock.
 
+*Reflecting shocks* (internal compression):
+- **Spec and plan:** spec `docs/superpowers/specs/2026-11-14-inlet-reflecting-shocks-design.md`, plan `docs/superpowers/plans/2026-11-14-inlet-reflecting-shocks.md`.
+- **Geometry and inputs:** a ramp at θ from the leading edge and a flat cowl at height H, over a channel of length L. Inputs are M₁, γ, θ, H and L.
+- **Handles:** the ramp angle, the cowl height (its leading edge) and the channel end. Each works by drag or by arrow keys, and the scale freezes while dragging.
+- **Model (pure, test-first):**
+  - `reflect/model.ts` bounces a weak oblique shock between the walls. Each reflection turns the flow by θ back parallel to the wall it leaves.
+  - Shocks leaving the ramp are drawn at β above horizontal; shocks leaving the cowl at β − θ below. Each is labelled with its angle to its wall.
+  - **Stops:** the next shock would leave the channel; the walls close in (channel narrower than 1% of H); regular reflection is impossible (a Mach reflection, marked but not modelled); a bow shock at the leading edge; subsonic flow; or the 100-reflection display cap.
+- **Reference cases:**
+  - M₁ = 2.8, θ = 16°: β₁ = 34.92°, M₂ = 2.059; the reflected shock is 29.33° to the cowl, with M₃ = 1.458 and p/p₁ = 6.607; the next reflection fails at θmax = 11.00°.
+  - Default M₁ = 3, θ = 10°, H = 1, L = 5: four shocks, M = 1.373, p/p₁ = 10.945, p₀/p₀₁ = 0.9125; the fifth fails at θmax = 8.67°.
+
 URL keys:
 - `calc` (isentropic/normal/oblique/inlet), and `g` (γ, shared).
 - `iso.k`/`iso.v`, `ns.k`/`ns.v`, `ob.m`/`ob.k`/`ob.v`.
-- `in.m`, `in.t` (angles, comma list), `in.l` (lengths), `in.prop` (`M`/`p`/`T`/`p0`), `in.cmp` (`1`/`0`), `in.sel`.
+- Inlet mode: `in.mode` (`ramps`/`reflect`).
+- Ramp series: `in.m`, `in.t` (angles, comma list), `in.l` (lengths), `in.prop` (`M`/`p`/`T`/`p0`), `in.cmp` (`1`/`0`), `in.sel`.
+- Reflecting shocks: `rf.m`, `rf.t`, `rf.h`, `rf.l`, `rf.prop`, `rf.sel`.
 
 Field text is stored as typed, so invalid input round-trips with its error. (In ramp lists, a typed decimal comma is stored as a point.)
 
-**Tests:** 703 (Vitest), with 100% coverage on `src/physics`, which is unchanged by the inlet. `npm run verify:ui` passes, including the inlet's layout sweep, 12 inlet behaviour checks, and a check that every calculator tab is on screen.
+**Tests:** 757 (Vitest), with 100% coverage on `src/physics`, which is unchanged by the inlet. `npm run verify:ui` passes. It sweeps both inlet modes at 1280 and 375 px in light and dark, runs 12 ramp-series checks and 14 reflect and mode-switching checks (including reload), and checks that every calculator tab is on screen.
 In the cloud container run it as `CHROMIUM_PATH=/opt/pw-browsers/chromium npm run verify:ui`.
 
 ## Decisions
@@ -98,7 +116,7 @@ In the cloud container run it as `CHROMIUM_PATH=/opt/pw-browsers/chromium npm ru
 - **`machAngleDeg` is now exported** from `src/physics` (closes the asin(1/M) cleanup from open issue 4).
 - **Vitest processes `index.css`** (`test.css.include`) so the contrast test can read the real tokens with `?raw`.
 
-### Multi-ramp inlet
+### Inlet: ramp series
 - **Made with the user:** ramp lengths are editable per ramp (option B). The chain lives in the feature's `model.ts`, reusing the oblique components.
 - **Made by Claude (open to change):**
   - **Lengths** are dimensionless, defaulting to 1, 0.6 and 0.4 so the default opens without a shock crossing.
@@ -108,6 +126,18 @@ In the cloud container run it as `CHROMIUM_PATH=/opt/pw-browsers/chromium npm ru
   - **Comparison:** shown by default, as a read-only single ramp on the same shading scale.
   - **Empty lists:** an empty `in.t` means one cleared ramp, not the defaults.
   - **Tabs on mobile:** they use 12 px text below `sm` so all four fit at 375 px.
+
+### Inlet: reflecting shocks
+- **Made with the user:** the geometry, the stop conditions, the reference cases, and the two-mode tab with its shared views (from the request).
+- **Made by Claude (open to change):**
+  - **"Walls meet"** means the channel is narrower than 1% of H at the next reflection. Reflected shocks always land before the apex, so a literal meeting never happens, and at M₁ ≈ 3 regular reflection always fails first. The closing stop fires at high M₁, e.g. M₁ = 10, θ = 5°.
+  - **Defaults:** H = 1 and L = 5, so all four default shocks are visible.
+  - **Limits:** θ ∈ (0, 40°], H ∈ (0, 5], L ∈ (0, 20].
+  - **Comparison:** the single-shock comparison stays in ramp mode only.
+  - **θ-β-M drag:** only shock 1's point sets θ. A later shock's incoming Mach depends on θ itself.
+  - **Tab name:** "Inlet". `Region.flowDeg` (formerly `thetaCumDeg`) is shown as "flow (°)".
+  - **Narrow screens:** below 560 px, shock-angle labels are listed under the drawing.
+  - **Chart widths** are measured before paint (`useElementWidth` uses `useLayoutEffect`).
 
 ## Open issues
 1. ~~PR not merged~~: physics and UI are merged into `main`.
@@ -126,6 +156,14 @@ In the cloud container run it as `CHROMIUM_PATH=/opt/pw-browsers/chromium npm ru
     - The shading select and the legend name properties slightly differently (`PROPERTY_NAMES` against `SHADE_NAMES`).
     - The corner drag is hand-rolled rather than using `usePointerDrag`.
     - `defaultSolution` duplicates `expectOk`.
+    - (The select/legend naming mismatch is fixed: both use `SHADE_NAMES`.)
+11. **Deferred minors from the reflecting-shocks review:**
+    - The handle-drag code is duplicated between `RampField` and `ReflectField`, and ramp drags don't freeze the scale.
+    - Small helpers are duplicated across modes (`centroid`, `rad`, the notice style), and reflect imports `clampSelection` from `ramps/model`.
+    - `reflect/text.ts` reads validated values back through unreachable `?? 0` fallbacks.
+    - `RecoveryChart`'s `single` and `singleName` should be one prop.
+    - On first load the shaded regions glide briefly from the pre-font-load layout (CSS `d` transition); the geometry is right once settled.
+    - The θ slider bottoms out at 0.5°, so a typed θ below that shows the slider at 0.5.
 
 ## Next steps (in order)
 1. **Decisions for you:**
