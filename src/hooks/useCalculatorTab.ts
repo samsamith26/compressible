@@ -7,7 +7,7 @@ export const CALCULATORS: readonly { id: CalculatorId; title: string; short: str
   { id: 'isentropic', title: 'Isentropic flow', short: 'Isentropic' },
   { id: 'normal', title: 'Normal shock', short: 'Normal' },
   { id: 'oblique', title: 'Oblique shock', short: 'Oblique' },
-  { id: 'inlet', title: 'Multi-ramp inlet', short: 'Inlet' },
+  { id: 'inlet', title: 'Inlet', short: 'Inlet' },
 ]
 
 const IDS = CALCULATORS.map((c) => c.id)

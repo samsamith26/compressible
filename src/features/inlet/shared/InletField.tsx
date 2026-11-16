@@ -8,6 +8,20 @@ import { RegionTooltip } from './RegionTooltip'
 import { labelInk, shadeColor, shadeValue } from './shade'
 import type { Chain, Pt, RegionShape, ShadeProperty } from './types'
 
+/**
+ * Where a shock's angle label goes: a quarter of the way along it, offset to its upstream side
+ * (the side facing the incoming flow, i.e. toward smaller x). Anchored at its end, the text runs
+ * away from the shock line.
+ */
+function labelSpot(x1: number, y1: number, x2: number, y2: number, minX: number): { x: number; y: number } {
+  const len = Math.hypot(x2 - x1, y2 - y1) || 1
+  const dx = (x2 - x1) / len
+  const dy = (y2 - y1) / len
+  const n = dy < 0 ? { x: dy, y: -dx } : { x: -dy, y: dx }
+  const left = n.x <= 0 ? n : { x: -n.x, y: -n.y }
+  return { x: Math.max(minX, x1 + dx * len * 0.25 + left.x * 8), y: y1 + dy * len * 0.25 + left.y * 8 }
+}
+
 export interface FieldShock {
   /** 1-based shock index. */
   readonly index: number
@@ -97,6 +111,9 @@ export function InletField({
   const shownRegion = chain.regions.find((r) => r.index === shown)
   const shownShape = regions.find((r) => r.index === shown)
   const floor = f.toModel(0, f.floorY).y
+  // On narrow drawings there is no room for angle labels on the shocks; they're listed below instead.
+  const compact = f.width < 560
+  const labelled = shocks.filter((sh) => sh.label !== undefined)
   const top = f.toModel(0, 0).y
   const first = lowerWall[0]
   const last = lowerWall[lowerWall.length - 1]
@@ -209,10 +226,10 @@ export function InletField({
                   onClick={() => onSelectShock(s.index)}
                 />
               ) : null}
-              {s.label === undefined ? null : (
+              {s.label === undefined || compact ? null : (
                 <text
-                  x={f.toX(s.from.x + (s.to.x - s.from.x) * 0.5) + 6}
-                  y={f.toY(s.from.y + (s.to.y - s.from.y) * 0.5)}
+                  {...labelSpot(f.toX(s.from.x), f.toY(s.from.y), f.toX(s.to.x), f.toY(s.to.y), 76)}
+                  textAnchor="end"
                   className="num fill-ink text-[10px]"
                   stroke="var(--panel)"
                   strokeWidth={3}
@@ -260,8 +277,9 @@ export function InletField({
               strokeDasharray="4 3"
             />
             <text
-              x={Math.min(Math.max(f.toX(stop.at.x) - 14, 2), f.width - 96)}
+              x={f.toX(stop.at.x) > f.width * 0.6 ? Math.min(f.toX(stop.at.x) + 4, f.width - 2) : Math.max(f.toX(stop.at.x) - 14, 2)}
               y={Math.max(f.toY(stop.at.y) - 62, 12)}
+              textAnchor={f.toX(stop.at.x) > f.width * 0.6 ? 'end' : 'start'}
               className="fill-down text-[11px]"
             >
               {stop.text}
@@ -271,6 +289,17 @@ export function InletField({
 
         {handles?.(f)}
       </svg>
+
+      {compact && labelled.length > 0 ? (
+        <p className="mt-1 text-xs text-ink">
+          {labelled.map((sh, i) => (
+            <span key={sh.index}>
+              {i === 0 ? '' : '; '}
+              shock {sh.index}: <span className="num">{sh.label}</span>
+            </span>
+          ))}
+        </p>
+      ) : null}
 
       {shownRegion !== undefined && shownShape !== undefined ? (
         <RegionTooltip

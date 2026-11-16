@@ -155,7 +155,7 @@ async function regionCell(page: Page, region: number, column: number): Promise<s
 }
 
 async function inletChecks(browser: Browser, base: string): Promise<void> {
-  console.log('Multi-ramp inlet')
+  console.log('Inlet: ramp series')
   const { page: p, errors } = await openPage(browser, base, '/?calc=inlet', 1280, 'light')
   const param = (key: string) => new URL(p.url()).searchParams.get(key)
 

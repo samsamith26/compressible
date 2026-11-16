@@ -1,184 +1,55 @@
-import { CalculatorLayout } from '@/components/CalculatorLayout'
-import { GammaField } from '@/components/GammaField'
-import { NumberField } from '@/components/NumberField'
-import { Panel } from '@/components/Panel'
-import { useMemo } from 'react'
-import { useDocumentTheme } from '@/hooks/useDocumentTheme'
-import { messageFor } from '@/lib/fields'
-import { CompareSummary } from '@/features/inlet/ramps/CompareSummary'
-import { RampField } from '@/features/inlet/ramps/RampField'
-import { plain } from '@/features/inlet/shared/labels'
-import { inletGeometry } from '@/features/inlet/ramps/geometry'
-import { ConflictNotice, DetachedRampNotice, SubsonicRampNotice } from '@/features/inlet/ramps/RampNotices'
-import { SHADE_PROPERTIES, singleRampLayout, totalTurn, type ShadeProperty } from '@/features/inlet/ramps/model'
-import { shadeDomain, shadeValue } from '@/features/inlet/shared/shade'
-import { ShadeLegend } from '@/features/inlet/shared/ShadeLegend'
-import { RampEditor } from '@/features/inlet/ramps/RampEditor'
-import { RecoveryChart } from '@/features/inlet/shared/RecoveryChart'
-import { recoverySteps, singleSteps } from '@/features/inlet/shared/recovery'
-import { RegionTable } from '@/features/inlet/shared/RegionTable'
-import { ShockDetail } from '@/features/inlet/shared/ShockDetail'
-import { useRamps } from '@/features/inlet/ramps/useRamps'
+import type { KeyboardEvent } from 'react'
+import { cn } from '@/lib/cn'
+import { RampsMode } from './ramps/RampsMode'
+import { ReflectMode } from './reflect/ReflectMode'
+import { INLET_MODES, useInletMode, type InletMode } from './useInletMode'
 
-const PROPERTY_NAMES: Readonly<Record<ShadeProperty, string>> = {
-  M: 'Mach number M',
-  p: 'static pressure p/p₁',
-  T: 'temperature T/T₁',
-  p0: 'total-pressure recovery p₀/p₀₁',
+const MODES: Readonly<Record<InletMode, { readonly name: string; readonly explanation: string }>> = {
+  ramps: { name: 'Ramp series', explanation: 'External compression: the shocks focus toward the cowl lip.' },
+  reflect: { name: 'Reflecting shocks', explanation: 'Internal compression: the shock bounces inside the duct.' },
 }
 
+/** The Inlet tab: two compression schemes behind one segmented control, sharing the same views. */
 export function InletCalculator() {
-  const s = useRamps()
-  const { chain } = s.solution
-  const stale = s.error !== null
-  const stopped = chain.shocks.find((sh) => sh.kind !== 'attached')
-  const theme = useDocumentTheme()
-  const { m1, ramps, gamma } = s.solution
-  const completed = chain.shocks.filter((sh) => sh.kind === 'attached').length
-  const final = chain.regions.at(-1)
-  const geometry = useMemo(() => inletGeometry(chain, ramps), [chain, ramps])
-  const single = useMemo(() => {
-    const layout = singleRampLayout(m1, ramps, gamma)
-    return layout === null ? null : { ...layout, geometry: inletGeometry(layout.chain, layout.ramps) }
-  }, [m1, ramps, gamma])
-  const showSingle = s.compare && single !== null
-  const domain = shadeDomain(
-    chain.regions.map((r) => shadeValue(r, s.property)),
-    showSingle ? single.chain.regions.map((r) => shadeValue(r, s.property)) : [],
-  )
+  const [mode, setMode] = useInletMode()
+
+  const onKeyDown = (e: KeyboardEvent<HTMLButtonElement>) => {
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight' && e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return
+    e.preventDefault()
+    const next = mode === 'ramps' ? 'reflect' : 'ramps'
+    setMode(next)
+    e.currentTarget.parentElement?.querySelector<HTMLButtonElement>(`[data-mode="${next}"]`)?.focus()
+  }
 
   return (
-    <CalculatorLayout
-      inputs={
-        <>
-          <NumberField
-            quantity={{ label: 'M₁', name: 'freestream Mach number' }}
-            value={s.m1Text}
-            onChange={s.setM1Text}
-            error={messageFor(s.error, 'm1')}
-            tone="up"
-          />
-          <GammaField value={s.gamma.text} onChange={s.gamma.setText} error={messageFor(s.error, 'gamma')} />
-          <RampEditor
-            thetaTexts={s.thetaTexts}
-            lengthTexts={s.lengthTexts}
-            error={s.error}
-            onTheta={s.setThetaText}
-            onLength={s.setLengthText}
-            onAdd={s.addRamp}
-            onRemove={s.removeRamp}
-          />
-          <div className="grid gap-1.5">
-            <label htmlFor="inlet-shade" className="text-sm font-medium">
-              Shade regions by
-            </label>
-            <select
-              id="inlet-shade"
-              value={s.property}
-              onChange={(e) => {
-                const next = SHADE_PROPERTIES.find((p) => p === e.target.value)
-                if (next !== undefined) s.setProperty(next)
-              }}
-              className="h-10 w-full cursor-pointer rounded-md border border-rule bg-panel px-3 text-base outline-none focus:border-ring"
+    <div className="grid gap-5">
+      <div className="grid gap-2">
+        <div role="radiogroup" aria-label="Inlet mode" className="inline-flex w-fit rounded-lg border border-rule bg-panel p-1">
+          {INLET_MODES.map((m) => (
+            <button
+              key={m}
+              type="button"
+              role="radio"
+              data-mode={m}
+              aria-checked={mode === m}
+              tabIndex={mode === m ? 0 : -1}
+              onClick={() => setMode(m)}
+              onKeyDown={onKeyDown}
+              className={cn(
+                'rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
+                mode === m ? 'bg-ink text-paper' : 'text-muted hover:bg-ink/8 hover:text-ink',
+              )}
             >
-              {SHADE_PROPERTIES.map((p) => (
-                <option key={p} value={p}>
-                  {PROPERTY_NAMES[p]}
-                </option>
-              ))}
-            </select>
-          </div>
-          <label className="flex items-center gap-2 text-sm">
-            <input type="checkbox" checked={s.compare} onChange={(e) => s.setCompare(e.target.checked)} className="size-4 accent-[var(--up)]" />
-            Compare with a single shock
-          </label>
-        </>
-      }
-      intro={
-        <p>
-          An external-compression inlet turns the flow in steps. Each ramp adds a weak oblique shock fed by the region
-          before it, so pressure rises with far less total-pressure loss than one strong turn. Drag a ramp corner, or
-          type its angle and length.
+              {MODES[m].name}
+            </button>
+          ))}
+        </div>
+        <p className="text-sm text-ink">{MODES[mode].explanation}</p>
+        <p className="text-xs text-muted">
+          Shock–boundary-layer interaction at reflections is ignored, and shock merging past an intersection is not modeled.
         </p>
-      }
-    >
-      {stopped?.kind === 'detached' ? <DetachedRampNotice shock={stopped} /> : null}
-      {stopped?.kind === 'subsonic' ? <SubsonicRampNotice shock={stopped} /> : null}
-      {geometry.conflict === null ? null : <ConflictNotice conflict={geometry.conflict} />}
-      <Panel title="Flow field" caption={<ShadeLegend property={s.property} domain={domain} theme={theme} />}>
-        <div className={showSingle ? 'grid gap-4 p-3 md:grid-cols-[3fr_2fr] md:items-end' : 'p-3'}>
-          <figure className="m-0 grid min-w-0 gap-1">
-            <RampField
-              label={`Multi-ramp flow field, ${ramps.length} ramp${ramps.length === 1 ? '' : 's'}`}
-              geometry={geometry}
-              chain={chain}
-              ramps={ramps}
-              property={s.property}
-              domain={domain}
-              selected={s.selected}
-              interactive
-              onSelectShock={s.select}
-              onCorner={(i, r) => s.setCorner(i, r.thetaDeg, r.length)}
-              stale={stale}
-            />
-            <figcaption className="text-xs text-muted">
-              {ramps.length} ramp{ramps.length === 1 ? '' : 's'} · drag a corner or focus it and use the arrow keys
-            </figcaption>
-          </figure>
-          {showSingle ? (
-            <figure className="m-0 grid min-w-0 gap-1">
-              <RampField
-                label="Single-shock comparison"
-                geometry={single.geometry}
-                chain={single.chain}
-                ramps={single.ramps}
-                property={s.property}
-                domain={domain}
-                selected={null}
-                interactive={false}
-                maxHeight={240}
-                stale={stale}
-              />
-              <figcaption className="text-xs text-muted">one ramp turning the full {totalTurn(ramps)}°</figcaption>
-            </figure>
-          ) : null}
-        </div>
-      </Panel>
-      <Panel title="Total-pressure recovery" caption="p₀/p₀₁ after each shock">
-        <div className="p-3">
-          <RecoveryChart
-            steps={recoverySteps(chain)}
-            single={s.compare ? singleSteps(s.solution.single) : null}
-            name={completed < ramps.length ? `${completed} of ${ramps.length} ramps` : `${ramps.length} ramp${ramps.length === 1 ? '' : 's'}`}
-            singleName={`single ${plain(totalTurn(ramps))}°`}
-            stale={stale}
-          />
-        </div>
-        {s.compare && final !== undefined ? (
-          <div className="border-t border-rule">
-            <CompareSummary
-              final={final}
-              rampCount={ramps.length}
-              single={s.solution.single}
-              m1={m1}
-              totalTurnDeg={totalTurn(ramps)}
-              stoppedAt={chain.detachedAt}
-              turnedDeg={final.flowDeg}
-            />
-          </div>
-        ) : null}
-      </Panel>
-      <Panel title="Regions" caption="ratios relative to the freestream (region 1)">
-        <RegionTable regions={chain.regions} highlight={s.selected + 1} stale={stale} />
-      </Panel>
-      <ShockDetail
-        shocks={chain.shocks}
-        selected={s.selected}
-        gamma={gamma}
-        stale={stale}
-        onSelect={s.select}
-        onBeta={s.setThetaFromBeta}
-      />
-    </CalculatorLayout>
+      </div>
+      {mode === 'ramps' ? <RampsMode /> : <ReflectMode />}
+    </div>
   )
 }

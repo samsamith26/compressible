@@ -1,11 +1,12 @@
-import { useEffect, useRef, useState, type RefObject } from 'react'
+import { useLayoutEffect, useRef, useState, type RefObject } from 'react'
 
 /** Track an element's content width (it should have no horizontal padding), so charts draw in real pixels (crisp text at any size). */
 export function useElementWidth<T extends HTMLElement>(fallback = 640): readonly [RefObject<T | null>, number] {
   const ref = useRef<T>(null)
   const [width, setWidth] = useState(fallback)
 
-  useEffect(() => {
+  // Measure before paint, so charts never draw (and animate) from the fallback width.
+  useLayoutEffect(() => {
     const el = ref.current
     if (el === null) return
     setWidth(el.clientWidth)
