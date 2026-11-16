@@ -16,7 +16,14 @@ const VIEWPORTS = [
   { name: 'mobile', width: 375, height: 812 },
 ] as const
 const SCHEMES = ['light', 'dark'] as const
-const CALCS = ['isentropic', 'normal', 'oblique', 'inlet'] as const
+/** Each calculator (and the inlet's second mode) checked at every width and theme. */
+const PAGES = [
+  { name: 'isentropic', path: '/?calc=isentropic' },
+  { name: 'normal', path: '/?calc=normal' },
+  { name: 'oblique', path: '/?calc=oblique' },
+  { name: 'inlet', path: '/?calc=inlet' },
+  { name: 'inlet-reflect', path: '/?calc=inlet&in.mode=reflect' },
+] as const
 
 let failures = 0
 function check(ok: boolean, what: string): void {
@@ -45,8 +52,8 @@ async function layoutChecks(browser: Browser, base: string): Promise<void> {
   console.log('Layout, theme and console errors')
   for (const vp of VIEWPORTS) {
     for (const scheme of SCHEMES) {
-      for (const calc of CALCS) {
-        const { page, errors } = await openPage(browser, base, `/?calc=${calc}`, vp.width, scheme)
+      for (const { name: calc, path } of PAGES) {
+        const { page, errors } = await openPage(browser, base, path, vp.width, scheme)
         const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)
         const dark = await page.evaluate(() => document.documentElement.classList.contains('dark'))
         check(overflow <= 0, `${calc} ${vp.name} ${scheme}: no horizontal scroll (${overflow}px)`)
@@ -215,6 +222,66 @@ async function inletChecks(browser: Browser, base: string): Promise<void> {
   await detached.page.close()
 }
 
+async function reflectChecks(browser: Browser, base: string): Promise<void> {
+  console.log('Inlet: reflecting shocks and mode switching')
+  const { page: p, errors } = await openPage(browser, base, '/?calc=inlet&in.t=8,9,10', 1280, 'light')
+  const param = (key: string) => new URL(p.url()).searchParams.get(key)
+
+  // Switching modes keeps each mode's inputs; reload restores mode and inputs.
+  await p.getByRole('radio', { name: 'Reflecting shocks' }).click()
+  check(param('in.mode') === 'reflect', 'choosing Reflecting shocks writes in.mode=reflect')
+  check(await p.getByText('Internal compression: the shock bounces inside the duct.').isVisible(), 'reflect mode shows its explanation')
+  await p.getByRole('textbox', { name: /^θ/ }).fill('9')
+  await p.getByRole('radio', { name: 'Ramp series' }).click()
+  check((await p.getByRole('textbox', { name: /ramp 2 angle/ }).inputValue()) === '9', 'ramp inputs survive a switch to reflect mode and back')
+  await p.getByRole('radio', { name: 'Reflecting shocks' }).click()
+  check((await p.getByRole('textbox', { name: /^θ/ }).inputValue()) === '9', 'reflect inputs survive a switch to ramp mode and back')
+  await p.reload()
+  await p.waitForLoadState('networkidle')
+  check(
+    (await p.getByRole('radio', { name: 'Reflecting shocks' }).getAttribute('aria-checked')) === 'true' &&
+      (await p.getByRole('textbox', { name: /^θ/ }).inputValue()) === '9',
+    'reload restores the mode and its inputs',
+  )
+
+  // The default case: four shocks, then a Mach reflection.
+  await p.getByRole('textbox', { name: /^θ/ }).fill('10')
+  check(await p.getByText(/Regular reflection impossible: a Mach reflection forms here \(not modeled\)/).isVisible(), 'reflect default shows the Mach-reflection notice')
+  check((await regionCell(p, 5, 7)).startsWith('0.912'), 'reflect default recovers p₀/p₀₁ 0.912… after four shocks')
+
+  // Keyboard reaches the three handles.
+  await p.getByRole('textbox', { name: /^M₁/ }).focus()
+  const reached = new Set<string>()
+  for (let i = 0; i < 30; i++) {
+    await p.keyboard.press('Tab')
+    reached.add(await p.evaluate(() => document.activeElement?.getAttribute('aria-label') ?? ''))
+  }
+  for (const name of ['Ramp angle handle', 'Cowl height handle', 'Channel end handle']) check(reached.has(name), `Tab reaches the ${name.toLowerCase()}`)
+
+  // Drag the cowl height handle.
+  const handle = p.getByRole('slider', { name: 'Cowl height handle' })
+  await handle.scrollIntoViewIfNeeded()
+  const box = await handle.boundingBox()
+  if (box === null) throw new Error('cowl handle not rendered')
+  const before = param('rf.h')
+  await p.mouse.move(box.x + box.width / 2, box.y + box.height / 2)
+  await p.mouse.down()
+  await p.mouse.move(box.x + box.width / 2, box.y - 30, { steps: 8 })
+  await p.mouse.up()
+  check(param('rf.h') !== before && Number(param('rf.h')) > 1, `dragging the cowl handle raises H (${before} → ${param('rf.h')})`)
+  check(errors.length === 0, `no console errors in reflect mode ${errors.join('; ')}`)
+  await p.screenshot({ path: join(OUT, 'inlet-reflect-edited.png'), fullPage: true })
+  await p.close()
+
+  // The channel closing at high Mach, on a phone in dark mode.
+  const closed = await openPage(browser, base, '/?calc=inlet&in.mode=reflect&rf.m=10&rf.t=5&rf.l=20', 375, 'dark')
+  check(await closed.page.getByText(/The walls close in/).isVisible(), 'a closing channel is reported')
+  const overflow = await closed.page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)
+  check(overflow <= 0, `closing channel at 375px has no horizontal scroll (${overflow}px)`)
+  await closed.page.screenshot({ path: join(OUT, 'inlet-reflect-closed-mobile-dark.png'), fullPage: true })
+  await closed.page.close()
+}
+
 async function main(): Promise<void> {
   mkdirSync(OUT, { recursive: true })
   const server = await preview({ preview: { port: 4174, strictPort: true }, logLevel: 'warn' })
@@ -225,6 +292,7 @@ async function main(): Promise<void> {
     await layoutChecks(browser, base)
     await behaviourChecks(browser, base)
     await inletChecks(browser, base)
+    await reflectChecks(browser, base)
   } finally {
     await browser.close()
     await server.close()
